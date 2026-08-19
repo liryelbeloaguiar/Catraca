@@ -1,0 +1,52 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">IDENTIDADE</span>
+    <h1>Estabelecimento</h1>
+    <p>Defina a identidade e o e-mail usado para testar as notificações.</p>
+  </div>
+</section>
+
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+@if (success()) {
+  <div class="alert feedback">{{ success() }}</div>
+}
+
+<form class="panel settings-form" [formGroup]="form" (ngSubmit)="save()">
+  <div class="panel-head">
+    <div>
+      <h2>Dados institucionais</h2>
+      <p>Esses dados identificam o estabelecimento nos crachás e avisos.</p>
+    </div>
+  </div>
+  <div class="fields">
+    <label>
+      Nome do estabelecimento
+      <input
+        formControlName="establishmentName"
+        maxlength="160"
+        placeholder="Informe o nome oficial"
+      />
+    </label>
+    <label>
+      E-mail para teste das notificações
+      <input
+        type="email"
+        formControlName="notificationEmail"
+        maxlength="254"
+        placeholder="nome@empresa.com.br"
+      />
+      <small>Enquanto preenchido, os avisos de pacientes serão enviados para este endereço.</small>
+    </label>
+  </div>
+  <div class="form-actions">
+    <button
+      class="button primary"
+      type="submit"
+      [disabled]="loading() || saving() || form.invalid"
+    >
+      {{ saving() ? "Salvando…" : "Salvar configuração" }}
+    </button>
+  </div>
+</form>

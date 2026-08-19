@@ -1,0 +1,111 @@
+<div class="app-shell" [class.menu-open]="menuOpen()">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/painel"
+      ><span class="brand-mark">C</span><span>Catraca</span></a
+    >
+    <nav aria-label="Menu principal">
+      <a routerLink="/painel" routerLinkActive="active"
+        ><span>⌂</span>Visão geral</a
+      >
+      <a routerLink="/meu-perfil" routerLinkActive="active"
+        ><span>○</span>Meu perfil</a
+      >
+      <a routerLink="/notificacoes" routerLinkActive="active"
+        ><span>◉</span>Notificações</a
+      >
+      @if (auth.has("APPOINTMENT_READ")) {
+        <a routerLink="/agendamentos" routerLinkActive="active"
+          ><span>□</span>Agendamentos</a
+        >
+      }
+      @if (auth.has("QUEUE_READ")) {
+        <a routerLink="/filas" routerLinkActive="active"
+          ><span>≋</span>Filas e fichas</a
+        >
+      }
+      @if (auth.has("EMPLOYEE_MANAGE")) {
+        <p class="nav-label">PESSOAS</p>
+        <a routerLink="/funcionarios" routerLinkActive="active"
+          ><span>♙</span>Funcionários</a
+        >
+      }
+      @if (auth.has("ROLE_DEV_ADMIN")) {
+        <a routerLink="/usuarios" routerLinkActive="active"
+          ><span>◎</span>Todos os usuários</a
+        >
+      }
+      @if (auth.has("ADMINISTRATION_MANAGE")) {
+        <p class="nav-label">ADMINISTRAÇÃO</p>
+        <a routerLink="/administracao/units" routerLinkActive="active"
+          ><span>◇</span>Unidades</a
+        >
+        <a routerLink="/administracao/services" routerLinkActive="active"
+          ><span>＋</span>Serviços</a
+        >
+        <a routerLink="/administracao/specialties" routerLinkActive="active"
+          ><span>✦</span>Especialidades</a
+        >
+        <a routerLink="/administracao/priorities" routerLinkActive="active"
+          ><span>↑</span>Prioridades</a
+        >
+        <a routerLink="/administracao/rooms" routerLinkActive="active"
+          ><span>▦</span>Salas</a
+        >
+        <a routerLink="/administracao/counters" routerLinkActive="active"
+          ><span>▤</span>Guichês</a
+        >
+        <a routerLink="/administracao/queues" routerLinkActive="active"
+          ><span>↝</span>Configurar filas</a
+        >
+        <a
+          routerLink="/administracao/professional-types"
+          routerLinkActive="active"
+          ><span>♢</span>Tipos profissionais</a
+        >
+        <a routerLink="/administracao/departments" routerLinkActive="active"
+          ><span>▥</span>Setores</a
+        >
+        <a routerLink="/escalas" routerLinkActive="active"
+          ><span>◫</span>Escalas e horários</a
+        >
+        <a routerLink="/paineis" routerLinkActive="active"
+          ><span>▣</span>Painéis de chamada</a
+        >
+      }
+      @if (auth.has("ROLE_ADMIN_USER") || auth.has("ROLE_DEV_ADMIN")) {
+        <a routerLink="/estabelecimento" routerLinkActive="active"
+          ><span>⌂</span>Estabelecimento</a
+        >
+      }
+      @if (auth.has("ROLE_DEV_ADMIN")) {
+        <a routerLink="/auditoria" routerLinkActive="active"
+          ><span>◷</span>Auditoria</a
+        >
+      }
+    </nav>
+    <div class="sidebar-user">
+      <a class="avatar" routerLink="/meu-perfil">
+        @if (avatarUrl()) {
+          <img [src]="avatarUrl()" alt="Foto do perfil" />
+        } @else {
+          {{ initials() }}
+        }
+      </a>
+      <div>
+        <strong>{{ auth.session()?.fullName }}</strong
+        ><small>{{ roleLabel() }}</small>
+      </div>
+      <button title="Sair" (click)="auth.logout()">↪</button>
+    </div>
+  </aside>
+  <section class="workspace">
+    <header class="topbar">
+      <button class="menu-button" (click)="menuOpen.set(!menuOpen())">
+        ☰
+      </button>
+      <span class="topbar-title">Central de atendimento</span>
+      <div class="status"><i></i>Sistema online</div>
+    </header>
+    <main class="content"><router-outlet /></main>
+  </section>
+</div>

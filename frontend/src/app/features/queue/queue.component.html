@@ -1,0 +1,129 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">OPERAÇÃO</span>
+    <h1>Filas e fichas</h1>
+    <p>Selecione a fila, informe o destino e faça a próxima chamada.</p>
+  </div>
+  @if (auth.has("ADMINISTRATION_MANAGE")) {
+    <a class="button ghost configure-link" routerLink="/paineis"
+      >Configurar painéis</a
+    >
+  }
+</section>
+@if (message()) {
+  <div class="alert feedback" [class.error]="failed()">{{ message() }}</div>
+}
+<section class="operation-grid">
+  <article class="panel queue-panel">
+    <div class="panel-head">
+      <div>
+        <h2>1. Selecione a fila</h2>
+        <p>Filas ativas cadastradas no sistema</p>
+      </div>
+    </div>
+    @if (loading()) {
+      <div class="empty">Carregando filas…</div>
+    } @else if (!queues().length) {
+      <div class="empty">
+        <span>≋</span>
+        <h3>Nenhuma fila cadastrada</h3>
+      </div>
+    } @else {
+      <div class="queue-list">
+        @for (queue of queues(); track queue["id"]) {
+          <button
+            [class.selected]="queueId.value === queue['id']"
+            (click)="selectQueue(queue)"
+          >
+            <span class="queue-prefix">{{ queue["ticket_prefix"] }}</span>
+            <span
+              ><strong>{{ queue["name"] }}</strong
+              ><small>Fila ativa</small></span
+            ><i>✓</i>
+          </button>
+        }
+      </div>
+    }
+  </article>
+  <article class="panel call-panel">
+    <div class="step-heading">
+      <span>2</span>
+      <div>
+        <h2>Defina o destino</h2>
+        <p>O local aparecerá na tela pública.</p>
+      </div>
+    </div>
+    @if (!selectedQueue()) {
+      <div class="destination-placeholder">
+        <span>▤</span>
+        <p>Selecione uma fila para liberar os destinos.</p>
+      </div>
+    } @else {
+      <div class="destination-fields">
+        <label
+          >Guichê<select [formControl]="counterId">
+            <option value="">Nenhum guichê</option>
+            @for (item of countersForQueue(); track item["id"]) {
+              <option [value]="item['id']">{{ item["name"] }}</option>
+            }
+          </select></label
+        >
+        <div class="or-divider"><span>ou</span></div>
+        <label
+          >Sala ou consultório<select [formControl]="roomId">
+            <option value="">Nenhuma sala</option>
+            @for (item of roomsForQueue(); track item["id"]) {
+              <option [value]="item['id']">
+                {{ item["name"]
+                }}{{ item["floor"] ? " · " + item["floor"] : "" }}
+              </option>
+            }
+          </select></label
+        >
+      </div>
+      <div class="call-action">
+        <span class="eyebrow">PRÓXIMA CHAMADA</span>
+        @if (calledTicket()) {
+          <strong class="called-ticket">{{ calledTicket() }}</strong>
+        } @else {
+          <p>A prioridade e o tempo de espera definem a próxima ficha.</p>
+        }
+        <button
+          class="button primary wide"
+          [disabled]="calling()"
+          (click)="callNext()"
+        >
+          {{ calling() ? "Chamando…" : "Chamar próxima ficha" }}
+        </button>
+      </div>
+    }
+  </article>
+</section>
+<section class="panel displays-panel">
+  <div class="panel-head">
+    <div>
+      <h2>Telas públicas</h2>
+      <p>Abrem isoladas em uma nova aba, sem sua sessão.</p>
+    </div>
+  </div>
+  @if (!panels().length) {
+    <div class="empty compact">
+      <span>▣</span>
+      <h3>Nenhum painel ativo</h3>
+      <p>O administrador precisa configurar uma tela pública.</p>
+    </div>
+  } @else {
+    <div class="display-links">
+      @for (panel of panels(); track panel.id) {
+        <button (click)="openPanel(panel)">
+          <span>▣</span>
+          <div>
+            <strong>{{ panel.name }}</strong
+            ><small>{{ panel.unitName }} · {{ panel.floor || "Geral" }}</small>
+          </div>
+          <b>Abrir ↗</b>
+        </button>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,199 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">ADMINISTRAÇÃO DE PESSOAS</span>
+    <h1>Funcionários</h1>
+    <p>Cadastre acessos funcionais e gere crachás virtuais.</p>
+  </div>
+  <button class="button primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? "Fechar" : "+ Novo funcionário" }}
+  </button>
+</section>
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+@if (success()) {
+  <div class="alert feedback">{{ success() }}</div>
+}
+@if (showForm()) {
+  <form class="panel employee-form" [formGroup]="form" (ngSubmit)="create()">
+    <div class="panel-head">
+      <div>
+        <h2>Novo funcionário</h2>
+        <p>O acesso e o crachá são gerados no mesmo cadastro.</p>
+      </div>
+    </div>
+    <div class="employee-fields">
+      <label class="span-two"
+        >Nome completo<input formControlName="fullName"
+      /></label>
+      <label
+        >E-mail de acesso<input type="email" formControlName="email"
+      /></label>
+      <label
+        >Senha temporária<input
+          type="password"
+          formControlName="temporaryPassword"
+        /><small>Mínimo de 8 caracteres.</small></label
+      >
+      <label
+        >Perfil funcional<select formControlName="roleCode">
+          <option value="">Selecione</option>
+          @for (role of roles(); track role.code) {
+            <option [value]="role.code">{{ role.name }}</option>
+          }
+        </select></label
+      >
+      <div class="generated-field">
+        <span>Matrícula</span>
+        <strong>Gerada automaticamente ao salvar</strong>
+        <small>Numeração sequencial e exclusiva.</small>
+      </div>
+      <label>Cargo<input formControlName="jobTitle" /></label>
+      <label>Telefone<input formControlName="phone" /></label>
+      <label
+        >Unidade<select formControlName="unitId">
+          <option value="">Sem unidade vinculada</option>
+          @for (unit of units(); track unit["id"]) {
+            <option [value]="unit['id']">{{ unit["name"] }}</option>
+          }
+        </select></label
+      >
+      <label
+        >Data de admissão<input type="date" formControlName="hiredOn"
+      /></label>
+      @if (isProfessional()) {
+        <label
+          >Tipo profissional<select formControlName="professionalTypeId">
+            <option value="">Selecione</option>
+            @for (type of professionalTypes(); track type["id"]) {
+              <option [value]="type['id']">{{ type["name"] }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Especialidade<select formControlName="specialtyId">
+            <option value="">Sem especialidade</option>
+            @for (specialty of specialties(); track specialty["id"]) {
+              <option [value]="specialty['id']">{{ specialty["name"] }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Registro profissional<input formControlName="registrationNumber"
+        /></label>
+        <label
+          >Duração padrão (min)<input
+            type="number"
+            formControlName="defaultDurationMinutes"
+        /></label>
+      }
+    </div>
+    <div class="form-actions">
+      <button type="button" class="button ghost" (click)="showForm.set(false)">
+        Cancelar</button
+      ><button class="button primary" [disabled]="form.invalid || saving()">
+        {{ saving() ? "Cadastrando…" : "Cadastrar e gerar crachá" }}
+      </button>
+    </div>
+  </form>
+}
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <h2>Equipe cadastrada</h2>
+      <p>{{ employees().length }} funcionário(s)</p>
+    </div>
+  </div>
+  @if (loading()) {
+    <div class="empty">Carregando…</div>
+  } @else if (!employees().length) {
+    <div class="empty">
+      <span>♙</span>
+      <h3>Nenhum funcionário cadastrado</h3>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Funcionário</th>
+            <th>Matrícula</th>
+            <th>Cargo</th>
+            <th>Perfil</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employee of employees(); track employee.id) {
+            <tr>
+              <td>
+                <strong>{{ employee.fullName }}</strong
+                ><br /><small>{{ employee.email }}</small>
+              </td>
+              <td>
+                <code>{{ employee.employeeNumber }}</code>
+              </td>
+              <td>
+                {{ employee.jobTitle }}<br /><small>{{
+                  employee.unitName || "Sem unidade"
+                }}</small>
+              </td>
+              <td>
+                @for (role of employee.roles; track role; let last = $last) {
+                  {{ roleName(role) }}{{ last ? "" : ", " }}
+                }
+              </td>
+              <td>
+                <span class="badge" [class.inactive]="!employee.active">{{
+                  employee.active ? "Ativo" : "Inativo"
+                }}</span>
+              </td>
+              <td class="actions">
+                <button class="link-button" (click)="openBadge(employee)">
+                  Ver crachá</button
+                ><button class="link-button" (click)="toggle(employee)">
+                  {{ employee.active ? "Desativar" : "Ativar" }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+@if (badge(); as employee) {
+  <div class="badge-overlay" (click)="closeBadge()">
+    <section class="badge-dialog" (click)="$event.stopPropagation()">
+      <div class="virtual-badge" id="printable-badge">
+        <header>
+          <span class="brand-mark">Q</span><strong>{{ establishmentName() }}</strong>
+        </header>
+        <div class="badge-photo">
+          @if (badgeAvatarUrl()) {
+            <img [src]="badgeAvatarUrl()" alt="Foto de {{ employee.fullName }}" />
+          } @else {
+            {{ initials(employee) }}
+          }
+        </div>
+        <h2>{{ employee.fullName }}</h2>
+        <p>{{ employee.jobTitle }}</p>
+        <div class="badge-meta">
+          <span
+            >MATRÍCULA<strong>{{ employee.employeeNumber }}</strong></span
+          ><span
+            >IDENTIFICAÇÃO<strong>{{ employee.badgeCode }}</strong></span
+          >
+        </div>
+        <footer>Catraca</footer>
+      </div>
+      <div class="badge-actions">
+        <button class="button ghost" (click)="closeBadge()">Fechar</button
+        ><button class="button primary" (click)="printBadge()">
+          Imprimir crachá
+        </button>
+      </div>
+    </section>
+  </div>
+}

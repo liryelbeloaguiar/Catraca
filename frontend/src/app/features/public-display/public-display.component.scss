@@ -1,0 +1,344 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  color: #eefcf8;
+  background: #0d333a;
+}
+.display-shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 25% 120%,
+      rgba(33, 139, 121, 0.35),
+      transparent 42%
+    ),
+    linear-gradient(145deg, #0a4c48, #102f39 64%, #142c35);
+}
+.display-header {
+  min-height: 94px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 30px;
+  padding: 16px clamp(24px, 3vw, 54px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(5, 28, 33, 0.28);
+}
+.display-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.display-brand div {
+  display: grid;
+}
+.display-brand strong {
+  font: 800 clamp(18px, 2vw, 26px) "Manrope";
+}
+.display-brand small {
+  margin-top: 2px;
+  color: #94bdb8;
+}
+.display-logo {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px 15px 15px 4px;
+  color: #0b5d55;
+  background: white;
+  font: 800 23px "Manrope";
+}
+.location {
+  display: grid;
+  text-align: center;
+}
+.location strong {
+  font: 700 clamp(17px, 2vw, 24px) "Manrope";
+}
+.location span {
+  color: #99c7c1;
+}
+.display-time {
+  display: grid;
+  text-align: right;
+}
+.display-time strong {
+  font: 700 clamp(27px, 3vw, 42px) "Manrope";
+  line-height: 1;
+}
+.display-time span {
+  margin-top: 6px;
+  color: #99b9b8;
+  text-transform: capitalize;
+}
+.display-content {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.75fr);
+  gap: clamp(18px, 2.4vw, 36px);
+  padding: clamp(22px, 3vw, 46px);
+}
+.current-call,
+.recent-panel {
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+}
+.current-call {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.current-call:after {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  right: -230px;
+  top: -230px;
+  box-shadow: 0 0 0 80px rgba(255, 255, 255, 0.025);
+}
+.call-label,
+.recent-title span {
+  color: #8ed8cb;
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 800;
+  letter-spacing: 2.4px;
+}
+.ticket-code {
+  margin: 2vh 0 0;
+  font: 800 clamp(68px, 10.5vw, 158px) "Manrope";
+  letter-spacing: -7px;
+  line-height: 1;
+  color: white;
+  text-shadow: 0 15px 45px rgba(0, 0, 0, 0.24);
+}
+.current-call > p {
+  margin: 15px 0 3vh;
+  color: #a8cbc7;
+  font-size: clamp(15px, 1.7vw, 23px);
+}
+.destination {
+  min-width: min(460px, 86%);
+  display: grid;
+  padding: 20px 30px;
+  border-radius: 18px;
+  color: #0b4d46;
+  background: #9be0d2;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+.destination small {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.destination strong {
+  font: 800 clamp(22px, 2.8vw, 40px) "Manrope";
+}
+.destination span {
+  font-weight: 700;
+}
+.recent-panel {
+  padding: clamp(22px, 3vw, 38px);
+  overflow: hidden;
+}
+.recent-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.recent-title i {
+  height: 1px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+.recent-list {
+  display: grid;
+}
+.recent-list article {
+  display: grid;
+  grid-template-columns: minmax(105px, 0.65fr) 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: clamp(18px, 2.3vh, 28px) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.recent-list article > strong {
+  font: 800 clamp(23px, 2.5vw, 38px) "Manrope";
+}
+.recent-list article div {
+  display: grid;
+}
+.recent-list b {
+  font-size: clamp(14px, 1.4vw, 20px);
+}
+.recent-list span {
+  margin-top: 4px;
+  color: #8fb3b0;
+}
+.recent-empty {
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+  color: #8fb3b0;
+  text-align: center;
+}
+.waiting-visual {
+  display: flex;
+  gap: 12px;
+  margin: 45px 0 25px;
+}
+.waiting-visual i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #8ed8cb;
+  animation: pulse 1.4s infinite alternate;
+}
+.waiting-visual i:nth-child(2) {
+  animation-delay: 0.25s;
+}
+.waiting-visual i:nth-child(3) {
+  animation-delay: 0.5s;
+}
+.current-call h2 {
+  font-size: clamp(24px, 3vw, 42px);
+  margin-bottom: 8px;
+}
+.display-footer {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 14px clamp(28px, 4vw, 70px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #8fb3b0;
+  font-size: 12px;
+}
+.display-footer > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.display-footer i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #55d293;
+  box-shadow: 0 0 0 4px rgba(85, 210, 147, 0.12);
+}
+.display-footer i.offline {
+  background: #ef9866;
+}
+.display-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.display-controls button {
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+.display-state {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+}
+.display-state h1 {
+  margin: 0;
+}
+.display-state p {
+  color: #9dbab8;
+}
+@keyframes pulse {
+  from {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-7px);
+  }
+}
+@media (max-width: 850px) {
+  .display-header {
+    grid-template-columns: 1fr auto;
+    min-height: 90px;
+  }
+  .location {
+    display: none;
+  }
+  .display-content {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  .current-call {
+    min-height: 58vh;
+  }
+  .recent-panel {
+    min-height: 300px;
+  }
+  .display-footer {
+    grid-template-columns: 1fr auto;
+  }
+  .display-footer > span {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .display-header {
+    padding: 16px 18px;
+  }
+  .display-brand small,
+  .display-time span {
+    display: none;
+  }
+  .display-logo {
+    width: 42px;
+    height: 42px;
+  }
+  .display-content {
+    padding: 16px;
+  }
+  .current-call {
+    padding: 24px 15px;
+    border-radius: 18px;
+  }
+  .ticket-code {
+    letter-spacing: -3px;
+  }
+  .destination {
+    padding: 17px;
+  }
+  .display-footer {
+    padding: 12px 18px;
+  }
+  .display-footer > div:first-child {
+    display: none;
+  }
+}

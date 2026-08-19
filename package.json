@@ -1,0 +1,11 @@
+{
+  "name": "catraca",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix frontend start",
+    "build": "npm --prefix frontend run build",
+    "install:all": "npm --prefix frontend install"
+  }
+}

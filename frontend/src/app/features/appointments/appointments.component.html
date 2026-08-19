@@ -1,0 +1,164 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">AGENDA</span>
+    <h1>Agendamentos</h1>
+    <p>Consulte e organize horários de atendimento.</p>
+  </div>
+  <button class="button primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? "Fechar" : "+ Novo agendamento" }}
+  </button>
+</section>
+@if (success()) {
+  <div class="alert success-message">{{ success() }}</div>
+}
+@if (showForm()) {
+  <form
+    class="panel scheduling-panel"
+    [formGroup]="form"
+    (ngSubmit)="schedule()"
+  >
+    <div class="panel-head">
+      <div>
+        <h2>Novo agendamento</h2>
+        <p>
+          {{
+            isPatient
+              ? "Escolha a data, unidade, serviço e horário."
+              : "Agende pelo nome sem criar uma conta para o paciente."
+          }}
+        </p>
+      </div>
+    </div>
+    @if (message()) {
+      <div class="alert error form-message">{{ message() }}</div>
+    }
+    <div class="schedule-grid">
+      @if (!isPatient) {
+        <label class="slot-field"
+          >Nome do paciente<input
+            formControlName="guestName"
+            placeholder="Nome completo para identificação"
+        /></label>
+      }
+      <label
+        >Data desejada<input type="date" formControlName="desiredDate"
+      /></label>
+      <label
+        >Unidade<select formControlName="unitId">
+          <option value="">Selecione uma unidade</option>
+          @for (unit of units(); track unit["id"]) {
+            <option [value]="unit['id']">{{ unit["name"] }}</option>
+          }
+        </select></label
+      >
+      <label
+        >Serviço<select formControlName="serviceId">
+          <option value="">Selecione um serviço</option>
+          @for (service of services(); track service["id"]) {
+            <option [value]="service['id']">{{ service["name"] }}</option>
+          }
+        </select></label
+      >
+      @if (requiresCounter()) {
+        <label
+          >Guichê de destino<select formControlName="counterId">
+            <option value="">Selecione um guichê</option>
+            @for (counter of countersForUnit(); track counter["id"]) {
+              <option [value]="counter['id']">{{ counter["name"] }}</option>
+            }
+          </select></label
+        >
+      }
+      <label class="slot-field"
+        >Horário disponível<select formControlName="timeSlotId">
+          <option value="">
+            {{
+              loadingSlots() ? "Carregando horários…" : "Selecione um horário"
+            }}
+          </option>
+          @for (slot of slots(); track slot["id"]) {
+            <option [value]="slot['id']">{{ slotLabel(slot) }}</option>
+          }
+        </select>
+        @if (form.controls.unitId.value && !loadingSlots() && !slots().length) {
+          <small
+            >Não existem horários cadastrados para esta unidade na data
+            escolhida.</small
+          >
+        }
+      </label>
+      @if (canOverbook) {
+        <label class="overbook-check"
+          ><input type="checkbox" formControlName="allowOverbook" /><span
+            >Autorizar encaixe se o horário estiver lotado</span
+          ></label
+        >
+      }
+    </div>
+    <div class="form-actions">
+      <button type="button" class="button ghost" (click)="showForm.set(false)">
+        Cancelar</button
+      ><button class="button primary" [disabled]="form.invalid || saving()">
+        {{ saving() ? "Agendando…" : "Confirmar agendamento" }}
+      </button>
+    </div>
+  </form>
+}
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <h2>Lista de agendamentos</h2>
+      <p>Dados reais da operação</p>
+    </div>
+  </div>
+  @if (loading()) {
+    <div class="empty">Carregando…</div>
+  } @else if (message() && !showForm()) {
+    <div class="alert error space">{{ message() }}</div>
+  } @else if (!rows().length) {
+    <div class="empty">
+      <span>□</span>
+      <h3>Nenhum agendamento</h3>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data e hora</th>
+            <th>Paciente</th>
+            <th>Serviço</th>
+            <th>Destino</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row["id"]) {
+            <tr>
+              <td>
+                <strong>{{
+                  asDate(row["starts_at"]) | date: "dd/MM/yyyy HH:mm"
+                }}</strong>
+              </td>
+              <td>{{ row["patient_name"] || "—" }}</td>
+              <td>{{ row["service_name"] }}</td>
+              <td>
+                {{
+                  row["counter_name"] ||
+                    row["professional_name"] ||
+                    row["unit_name"]
+                }}
+              </td>
+              <td>
+                <span class="badge">{{ row["status"] }}</span>
+                @if (row["overbook"]) {
+                  <small> Encaixe</small>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

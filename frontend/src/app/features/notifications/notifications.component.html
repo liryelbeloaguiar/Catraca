@@ -1,0 +1,49 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">COMUNICAÇÃO</span>
+    <h1>Notificações</h1>
+    <p>Acompanhe avisos de mudanças nas escalas e a situação dos e-mails.</p>
+  </div>
+</section>
+
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+
+@if (loading()) {
+  <section class="panel"><div class="empty">Carregando notificações…</div></section>
+} @else if (!rows().length) {
+  <section class="panel">
+    <div class="empty">
+      <span>○</span>
+      <h3>Nenhuma notificação</h3>
+      <p>Alterações que afetem agendamentos aparecerão aqui.</p>
+    </div>
+  </section>
+} @else {
+  <section class="notification-list">
+    @for (row of rows(); track row["id"]) {
+      <article class="notification-card" [class.unread]="!row['read_at']">
+        <span class="notice-icon">!</span>
+        <div>
+          <header>
+            <div>
+              <h2>{{ row["title"] }}</h2>
+              <time>{{ asDate(row["created_at"]) | date: "dd/MM/yyyy 'às' HH:mm" }}</time>
+            </div>
+            <span class="email-status" [class.sent]="row['email_status'] === 'SENT'">
+              {{ emailLabel(row["email_status"]) }}
+            </span>
+          </header>
+          <p>{{ row["message"] }}</p>
+          @if (row["email_to"]) {
+            <small>Destino do teste: {{ row["email_to"] }}</small>
+          }
+          @if (!row["read_at"]) {
+            <button class="link-button" (click)="markRead(row)">Marcar como lida</button>
+          }
+        </div>
+      </article>
+    }
+  </section>
+}

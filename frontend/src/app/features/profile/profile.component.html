@@ -1,0 +1,122 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">CONTA</span>
+    <h1>Meu perfil</h1>
+    <p>Atualize seus dados pessoais, sua foto e sua senha.</p>
+  </div>
+</section>
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+@if (success()) {
+  <div class="alert feedback">{{ success() }}</div>
+}
+@if (loading()) {
+  <section class="panel"><div class="empty">Carregando perfil…</div></section>
+} @else if (profile(); as current) {
+  <section class="profile-grid">
+    <article class="panel identity-card">
+      <div class="photo-wrap">
+        @if (avatarUrl()) {
+          <img [src]="avatarUrl()" alt="Foto do perfil" />
+        } @else {
+          <span>{{ initials() }}</span>
+        }
+      </div>
+      <h2>{{ current.fullName }}</h2>
+      <p>{{ current.email }}</p>
+      <label class="button ghost upload-button"
+        >{{ uploading() ? "Enviando…" : "Alterar foto" }}
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          (change)="uploadAvatar($event)"
+          [disabled]="uploading()"
+        />
+      </label>
+      <small>JPG, PNG ou WebP, até 2 MB.</small>
+      <div class="role-list">
+        @for (role of current.roles; track role) {
+          <span class="badge">{{ roleName(role) }}</span>
+        }
+      </div>
+      @if (current.badgeCode) {
+        <div class="employee-summary">
+          <small>CRACHÁ</small><strong>{{ current.badgeCode }}</strong
+          ><span>{{ current.jobTitle }}</span
+          ><span>Matrícula {{ current.employeeNumber }}</span>
+        </div>
+      }
+    </article>
+    <div class="profile-forms">
+      <form
+        class="panel profile-form"
+        [formGroup]="profileForm"
+        (ngSubmit)="saveProfile()"
+      >
+        <div class="panel-head">
+          <div>
+            <h2>Dados pessoais</h2>
+            <p>Informações visíveis no sistema.</p>
+          </div>
+        </div>
+        <div class="fields">
+          <label>Nome completo<input formControlName="fullName" /></label
+          ><label
+            >Telefone<input
+              formControlName="phone"
+              placeholder="(00) 00000-0000" /></label
+          ><label
+            >E-mail<input [value]="current.email" disabled /><small
+              >O e-mail de acesso é administrado com segurança.</small
+            ></label
+          >
+        </div>
+        <div class="form-actions">
+          <button
+            class="button primary"
+            [disabled]="profileForm.invalid || saving()"
+          >
+            Salvar alterações
+          </button>
+        </div>
+      </form>
+      <form
+        class="panel profile-form"
+        [formGroup]="passwordForm"
+        (ngSubmit)="changePassword()"
+      >
+        <div class="panel-head">
+          <div>
+            <h2>Segurança</h2>
+            <p>Troque sua senha de acesso.</p>
+          </div>
+        </div>
+        <div class="fields three">
+          <label
+            >Senha atual<input
+              type="password"
+              formControlName="currentPassword" /></label
+          ><label
+            >Nova senha<input
+              type="password"
+              formControlName="newPassword"
+            /><small>Mínimo de 8 caracteres.</small></label
+          ><label
+            >Confirmar senha<input
+              type="password"
+              formControlName="confirmPassword"
+          /></label>
+        </div>
+        <div class="form-actions">
+          <button
+            class="button primary"
+            [disabled]="passwordForm.invalid || saving()"
+          >
+            Alterar senha
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+}

@@ -1,0 +1,74 @@
+.feedback {
+  margin-bottom: 18px;
+}
+.notification-list {
+  display: grid;
+  gap: 14px;
+}
+.notification-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 4px 18px rgba(20, 50, 54, 0.04);
+}
+.notification-card.unread {
+  border-left: 4px solid var(--green);
+}
+.notice-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--green-dark);
+  background: var(--mint);
+  font-weight: 900;
+}
+.notification-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.notification-card h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.notification-card time,
+.notification-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.notification-card p {
+  margin: 15px 0 10px;
+  color: #40575c;
+  white-space: pre-line;
+}
+.email-status {
+  align-self: start;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #986325;
+  background: #fff2db;
+  font-size: 11px;
+  font-weight: 800;
+}
+.email-status.sent {
+  color: #08715f;
+  background: #e4f5f1;
+}
+.notification-card .link-button {
+  display: block;
+  margin-top: 13px;
+}
+@media (max-width: 620px) {
+  .notification-card {
+    grid-template-columns: 1fr;
+  }
+  .notification-card header {
+    flex-direction: column;
+  }
+}

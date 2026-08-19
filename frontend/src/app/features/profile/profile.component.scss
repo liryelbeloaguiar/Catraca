@@ -1,0 +1,123 @@
+.feedback {
+  margin-bottom: 18px;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+}
+.identity-card {
+  padding: 30px;
+  text-align: center;
+  align-self: start;
+}
+.photo-wrap {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #087c6c;
+  background: #dff3ed;
+  font:
+    800 30px "Manrope",
+    sans-serif;
+}
+.photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.identity-card h2 {
+  margin-bottom: 4px;
+  font-size: 20px;
+}
+.identity-card p {
+  font-size: 13px;
+}
+.upload-button {
+  display: inline-block;
+  margin: 10px 0 8px;
+  cursor: pointer;
+}
+.upload-button input {
+  display: none;
+}
+.identity-card > small {
+  display: block;
+  color: #718186;
+}
+.role-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 18px;
+}
+.employee-summary {
+  display: grid;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 18px;
+  text-align: left;
+  border-radius: 12px;
+  background: #f2f7f6;
+}
+.employee-summary small {
+  color: #087c6c;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.employee-summary span {
+  color: #64777c;
+  font-size: 12px;
+}
+.profile-forms {
+  display: grid;
+  gap: 20px;
+}
+.profile-form {
+  padding-bottom: 22px;
+}
+.fields {
+  display: grid;
+  gap: 17px;
+  padding: 22px;
+}
+.fields.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.fields label {
+  display: grid;
+  grid-template-rows: auto 46px auto;
+  gap: 8px;
+  color: #31484d;
+  font-size: 13px;
+  font-weight: 600;
+}
+.fields input {
+  height: 46px;
+  padding: 13px 14px;
+  border: 1px solid #d7e1df;
+  border-radius: 10px;
+  outline: none;
+}
+.fields input:focus {
+  border-color: #087c6c;
+  box-shadow: 0 0 0 3px rgba(8, 124, 108, 0.1);
+}
+.fields small {
+  min-height: 16px;
+  color: #64777c;
+  font-weight: 400;
+}
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .fields.three {
+    grid-template-columns: 1fr;
+  }
+}

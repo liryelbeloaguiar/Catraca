@@ -1,0 +1,230 @@
+.feedback {
+  margin-bottom: 18px;
+}
+.configure-link {
+  text-decoration: none;
+}
+.operation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+.queue-panel,
+.call-panel {
+  min-height: 480px;
+}
+.queue-list {
+  display: grid;
+  padding: 12px;
+}
+.queue-list button {
+  display: grid;
+  grid-template-columns: 48px 1fr 25px;
+  align-items: center;
+  gap: 13px;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--line);
+  border-radius: 10px;
+  text-align: left;
+  color: var(--ink);
+  background: white;
+  cursor: pointer;
+}
+.queue-list button:hover {
+  background: #f6faf9;
+}
+.queue-list button.selected {
+  border-color: #9dcdc4;
+  background: #eaf5f2;
+}
+.queue-list button i {
+  opacity: 0;
+  color: var(--green);
+  font-style: normal;
+}
+.queue-list button.selected i {
+  opacity: 1;
+}
+.queue-prefix {
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--green-dark);
+  background: var(--mint);
+  font-weight: 800;
+}
+.queue-list strong,
+.queue-list small {
+  display: block;
+}
+.queue-list small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.call-panel {
+  padding: 26px;
+}
+.step-heading {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.step-heading > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: white;
+  background: var(--green);
+  font-weight: 800;
+}
+.step-heading h2 {
+  margin: 0 0 3px;
+  font-size: 17px;
+}
+.step-heading p {
+  margin: 0;
+  font-size: 12px;
+}
+.destination-placeholder {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+}
+.destination-placeholder > span {
+  font-size: 36px;
+  color: #9abbb5;
+}
+.destination-fields {
+  display: grid;
+  gap: 15px;
+  padding: 24px 0;
+}
+.destination-fields label {
+  display: grid;
+  gap: 8px;
+  color: #31484d;
+  font-size: 13px;
+  font-weight: 600;
+}
+.destination-fields select {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px;
+  border: 1px solid #d7e1df;
+  border-radius: 10px;
+  background: #fbfcfc;
+}
+.or-divider {
+  height: 1px;
+  display: grid;
+  place-items: center;
+  background: var(--line);
+}
+.or-divider span {
+  padding: 0 9px;
+  color: #91a09f;
+  background: white;
+  font-size: 10px;
+}
+.call-action {
+  display: grid;
+  gap: 11px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.call-action p {
+  margin: 0;
+  font-size: 12px;
+}
+.called-ticket {
+  font: 800 32px "Manrope";
+  color: var(--green);
+}
+.displays-panel {
+  margin-top: 20px;
+}
+.empty.compact {
+  min-height: 180px;
+}
+.display-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px;
+}
+.display-links button {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  text-align: left;
+  background: white;
+  cursor: pointer;
+}
+.display-links button:hover {
+  border-color: #9dcdc4;
+  background: #f4faf8;
+}
+.display-links button > span {
+  width: 40px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: white;
+  background: var(--navy);
+}
+.display-links strong,
+.display-links small {
+  display: block;
+}
+.display-links small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+.display-links b {
+  color: var(--green);
+  font-size: 11px;
+}
+@media (max-width: 900px) {
+  .operation-grid {
+    grid-template-columns: 1fr;
+  }
+  .queue-panel,
+  .call-panel {
+    min-height: 0;
+  }
+  .display-links {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .call-panel {
+    padding: 20px;
+  }
+  .display-links {
+    padding: 12px;
+  }
+  .display-links button {
+    grid-template-columns: 38px 1fr;
+  }
+  .display-links b {
+    grid-column: 2;
+  }
+}

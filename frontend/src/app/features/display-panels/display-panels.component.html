@@ -1,0 +1,155 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">COMUNICAÇÃO VISUAL</span>
+    <h1>Painéis de chamada</h1>
+    <p>Configure as telas públicas de cada guichê, andar ou setor.</p>
+  </div>
+  <button class="button primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? "Fechar" : "+ Novo painel" }}
+  </button>
+</section>
+
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+@if (success()) {
+  <div class="alert feedback">{{ success() }}</div>
+}
+
+@if (showForm()) {
+  <form class="panel panel-form" [formGroup]="form" (ngSubmit)="create()">
+    <div class="panel-head">
+      <div>
+        <h2>Novo painel público</h2>
+        <p>Escolha onde a tela ficará e quais filas ela acompanhará.</p>
+      </div>
+    </div>
+    <div class="panel-fields">
+      <label>
+        Unidade
+        <select formControlName="unitId">
+          <option value="">Selecione</option>
+          @for (unit of units(); track unit["id"]) {
+            <option [value]="unit['id']">{{ unit["name"] }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Código
+        <input formControlName="code" placeholder="Ex.: TV-TERREO" />
+      </label>
+      <label class="span-two">
+        Nome exibido
+        <input formControlName="name" placeholder="Painel do térreo" />
+      </label>
+      <label>
+        Andar ou localização
+        <input formControlName="floor" placeholder="Ex.: Térreo" />
+      </label>
+      <label>
+        Quantidade de chamadas exibidas
+        <input
+          type="number"
+          min="1"
+          max="20"
+          formControlName="lastCallsLimit"
+        />
+      </label>
+      <div class="queue-selector span-two">
+        <span>Filas exibidas</span>
+        @if (!form.controls.unitId.value) {
+          <p>Selecione primeiro uma unidade.</p>
+        } @else if (!queuesForUnit().length) {
+          <p>Esta unidade ainda não possui filas ativas.</p>
+        } @else {
+          <div>
+            @for (queue of queuesForUnit(); track queue["id"]) {
+              <button
+                type="button"
+                [class.selected]="selectedQueues().has(queue['id'] + '')"
+                (click)="toggleQueue(queue['id'] + '')"
+              >
+                <i></i>{{ queue["name"] }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <label class="check-field">
+        <input type="checkbox" formControlName="audioEnabled" />
+        Aviso sonoro
+      </label>
+      <label class="check-field">
+        <input type="checkbox" formControlName="voiceEnabled" />
+        Chamada por voz
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="button ghost" (click)="showForm.set(false)">
+        Cancelar
+      </button>
+      <button class="button primary" [disabled]="saving() || form.invalid">
+        {{ saving() ? "Criando…" : "Criar painel" }}
+      </button>
+    </div>
+  </form>
+}
+
+@if (loading()) {
+  <section class="panel"><div class="empty">Carregando painéis…</div></section>
+} @else if (!panels().length) {
+  <section class="panel">
+    <div class="empty">
+      <span>▣</span>
+      <h3>Nenhum painel configurado</h3>
+      <p>Crie uma tela para um guichê, andar ou conjunto de filas.</p>
+    </div>
+  </section>
+} @else {
+  <section class="panel-grid">
+    @for (panel of panels(); track panel.id) {
+      <article class="panel-card" [class.inactive]="!panel.active">
+        <div class="screen-icon">
+          <span>{{ panel.code }}</span>
+        </div>
+        <div class="panel-info">
+          <div class="panel-card-title">
+            <div>
+              <h2>{{ panel.name }}</h2>
+              <p>{{ panel.unitName }} · {{ panel.floor || "Local geral" }}</p>
+            </div>
+            <span class="badge" [class.inactive]="!panel.active">
+              {{ panel.active ? "Ativo" : "Inativo" }}
+            </span>
+          </div>
+          <dl>
+            <div>
+              <dt>Filas</dt>
+              <dd>{{ panel.queueNames }}</dd>
+            </div>
+            <div>
+              <dt>Chamadas</dt>
+              <dd>{{ panel.lastCallsLimit }} últimas</dd>
+            </div>
+            <div>
+              <dt>Som</dt>
+              <dd>{{ panel.audioEnabled ? "Ativo" : "Desativado" }}</dd>
+            </div>
+          </dl>
+          <div class="panel-actions">
+            <button
+              class="button primary"
+              (click)="openPanel(panel)"
+              [disabled]="!panel.active"
+            >
+              Abrir tela pública ↗
+            </button>
+            <button class="button ghost" (click)="toggle(panel)">
+              {{ panel.active ? "Desativar" : "Ativar" }}
+            </button>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+}

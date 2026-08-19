@@ -1,0 +1,81 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">ADMINISTRAÇÃO TÉCNICA</span>
+    <h1>Todos os usuários</h1>
+    <p>Visão geral de pacientes, funcionários e administradores.</p>
+  </div>
+</section>
+
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+
+<section class="panel">
+  <div class="panel-head users-head">
+    <div>
+      <h2>Usuários cadastrados</h2>
+      <p>{{ users().length }} registro(s) encontrado(s)</p>
+    </div>
+    <form class="search-form" (ngSubmit)="load()">
+      <input
+        class="search"
+        name="search"
+        [(ngModel)]="search"
+        placeholder="Buscar por nome ou e-mail"
+      />
+      <button class="button ghost" type="submit">Buscar</button>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <div class="empty">Carregando usuários…</div>
+  } @else if (!users().length) {
+    <div class="empty">
+      <span>○</span>
+      <h3>Nenhum usuário encontrado</h3>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Perfil</th>
+            <th>Matrícula</th>
+            <th>Cadastro</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>
+                <strong>{{ user.fullName }}</strong
+                ><br />
+                <small>{{ user.email }}</small>
+              </td>
+              <td>
+                @for (role of user.roles; track role; let last = $last) {
+                  {{ roleName(role) }}{{ last ? "" : ", " }}
+                }
+              </td>
+              <td>{{ user.employeeNumber || "Não se aplica" }}</td>
+              <td>{{ user.createdAt | date: "dd/MM/yyyy" }}</td>
+              <td>
+                <span class="badge" [class.inactive]="!user.active">
+                  {{ user.active ? "Ativo" : "Inativo" }}
+                </span>
+              </td>
+              <td>
+                <button class="link-button" (click)="toggle(user)">
+                  {{ user.active ? "Desativar" : "Ativar" }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

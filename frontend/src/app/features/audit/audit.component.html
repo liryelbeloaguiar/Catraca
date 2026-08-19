@@ -1,0 +1,8 @@
+<section class="page-head"><div><span class="eyebrow">SEGURANÇA</span><h1>Auditoria</h1><p>Ações, usuários, IPs e origem das operações realizadas no sistema.</p></div></section>
+<section class="panel"><div class="panel-head"><div><h2>Eventos recentes</h2><p>Ordenados do mais recente</p></div></div>
+@if (loading()) { <div class="empty">Carregando…</div> }
+@else if (message()) { <div class="alert error space">{{ message() }}</div> }
+@else if (!rows().length) { <div class="empty"><span>◷</span><h3>Nenhum evento registrado</h3></div> }
+@else { <div class="table-wrap"><table><thead><tr><th>Data</th><th>Usuário</th><th>Ação</th><th>Recurso</th><th>Endereço IP</th><th>Detalhes técnicos</th></tr></thead><tbody>
+  @for (row of rows(); track row['id']) { <tr><td>{{ asDate(row['occurredAt']) | date:'dd/MM/yyyy HH:mm:ss' }}</td><td><strong>{{ row['actorName'] || 'Sistema' }}</strong><br><small>{{ row['actorEmail'] || '—' }}</small></td><td><span class="badge">{{ row['action'] }}</span></td><td>{{ row['resourceType'] }}</td><td><code>{{ row['ipAddress'] || '—' }}</code></td><td><details><summary>Visualizar</summary><pre>{{ row['details'] }}</pre></details></td></tr> }
+</tbody></table></div> }</section>

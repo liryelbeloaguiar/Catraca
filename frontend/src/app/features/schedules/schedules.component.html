@@ -1,0 +1,277 @@
+<section class="page-head">
+  <div>
+    <span class="eyebrow">ADMINISTRAÇÃO</span>
+    <h1>Escalas e horários</h1>
+    <p>Organize a disponibilidade dos profissionais de forma simples.</p>
+  </div>
+  <button class="button primary" (click)="openCreate()">
+    {{ showForm() ? "Fechar formulário" : "+ Nova escala" }}
+  </button>
+</section>
+@if (message()) {
+  <div class="alert error feedback">{{ message() }}</div>
+}
+@if (success()) {
+  <div class="alert feedback">{{ success() }}</div>
+}
+
+@if (showForm()) {
+  <form class="schedule-builder" [formGroup]="form" (ngSubmit)="save()">
+    <div class="builder-main">
+      <section class="panel form-section">
+        <header>
+          <span>1</span>
+          <div>
+            <h2>{{ editingId() ? "Editar escala" : "Profissional e local" }}</h2>
+            <p>
+              {{ editingId() ? "Profissional e unidade são mantidos para preservar o histórico." : "Defina quem atenderá e onde." }}
+            </p>
+          </div>
+        </header>
+        <div class="section-grid three">
+          <label
+            >Profissional<select formControlName="professionalId">
+              <option value="">Selecione o profissional</option>
+              @for (item of professionals(); track item["id"]) {
+                <option [value]="item['id']">
+                  {{ item["full_name"] }} — {{ item["professional_type_name"] }}
+                </option>
+              }
+            </select></label
+          >
+          <label
+            >Unidade<select formControlName="unitId">
+              <option value="">Selecione a unidade</option>
+              @for (item of units(); track item["id"]) {
+                <option [value]="item['id']">{{ item["name"] }}</option>
+              }
+            </select></label
+          >
+          <label
+            >Sala<select formControlName="roomId">
+              <option value="">Sem sala fixa</option>
+              @for (item of roomsForUnit(); track item["id"]) {
+                <option [value]="item['id']">
+                  {{ item["name"]
+                  }}{{ item["floor"] ? " · " + item["floor"] : "" }}
+                </option>
+              }
+            </select></label
+          >
+        </div>
+      </section>
+
+      <section class="panel form-section">
+        <header>
+          <span>2</span>
+          <div>
+            <h2>Período e dias</h2>
+            <p>Escolha a vigência e os dias permitidos.</p>
+          </div>
+        </header>
+        <div class="section-grid period-grid">
+          <label
+            >Início da vigência<input type="date" formControlName="validFrom"
+          /></label>
+          <label
+            >Fim da vigência<input type="date" formControlName="validUntil"
+          /></label>
+          <div class="days-field">
+            <span>Dias da semana</span>
+            <div>
+              @for (day of days; track day.value) {
+                <button
+                  type="button"
+                  [class.selected]="selectedDays().has(day.value)"
+                  (click)="toggleDay(day.value)"
+                >
+                  <b>{{ day.label }}</b
+                  ><small>{{ day.full }}</small>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel form-section">
+        <header>
+          <span>3</span>
+          <div>
+            <h2>Jornada e intervalo</h2>
+            <p>Informe o expediente e a pausa do profissional.</p>
+          </div>
+        </header>
+        <div class="section-grid four">
+          <label
+            >Início do expediente<input type="time" formControlName="startTime"
+          /></label>
+          <label
+            >Fim do expediente<input type="time" formControlName="endTime"
+          /></label>
+          <label
+            >Início do intervalo<input type="time" formControlName="breakStart"
+          /></label>
+          <label
+            >Fim do intervalo<input type="time" formControlName="breakEnd"
+          /></label>
+        </div>
+      </section>
+
+      <section class="panel form-section">
+        <header>
+          <span>4</span>
+          <div>
+            <h2>Formato dos horários</h2>
+            <p>Controle duração e quantidade de vagas.</p>
+          </div>
+        </header>
+        <div class="section-grid two compact-fields">
+          <label
+            >Duração de cada atendimento<input
+              type="number"
+              min="5"
+              formControlName="slotDurationMinutes"
+            /><small>Em minutos</small></label
+          >
+          <label
+            >Vagas por horário<input
+              type="number"
+              min="1"
+              formControlName="capacity"
+            /><small>Use 1 para atendimento individual</small></label
+          >
+        </div>
+      </section>
+    </div>
+
+    <aside class="builder-summary">
+      <div class="summary-head">
+        <span>RESUMO DA ESCALA</span>
+        <h2>{{ editingId() ? "Confira as alterações" : "Confira antes de gerar" }}</h2>
+      </div>
+      <dl>
+        <div>
+          <dt>Profissional</dt>
+          <dd>{{ selectedProfessional() }}</dd>
+        </div>
+        <div>
+          <dt>Unidade</dt>
+          <dd>{{ selectedUnit() }}</dd>
+        </div>
+        <div>
+          <dt>Dias</dt>
+          <dd>{{ selectedDaysLabel() }}</dd>
+        </div>
+        <div>
+          <dt>Jornada</dt>
+          <dd>
+            {{ form.controls.startTime.value }}–{{
+              form.controls.endTime.value
+            }}
+          </dd>
+        </div>
+        <div>
+          <dt>Intervalo</dt>
+          <dd>
+            {{ form.controls.breakStart.value || "Sem intervalo"
+            }}{{
+              form.controls.breakEnd.value
+                ? "–" + form.controls.breakEnd.value
+                : ""
+            }}
+          </dd>
+        </div>
+        <div>
+          <dt>Vagas</dt>
+          <dd>{{ form.controls.capacity.value }} por horário</dd>
+        </div>
+      </dl>
+      <div class="slot-estimate">
+        <span>PREVISÃO</span><strong>{{ estimatedSlots() }}</strong>
+        <p>horários serão gerados para o período</p>
+      </div>
+      <div class="summary-actions">
+        <button
+          type="button"
+          class="button ghost"
+          (click)="cancelEdit()"
+        >
+          Cancelar</button
+        ><button class="button primary" [disabled]="form.invalid || saving()">
+          {{ saving() ? "Salvando…" : editingId() ? "Salvar alterações" : "Gerar escala" }}
+        </button>
+      </div>
+    </aside>
+  </form>
+}
+
+<section class="schedule-list-head">
+  <div>
+    <h2>Escalas cadastradas</h2>
+    <p>{{ schedules().length }} configuração(ões)</p>
+  </div>
+</section>
+@if (loading()) {
+  <section class="panel"><div class="empty">Carregando escalas…</div></section>
+} @else if (!schedules().length) {
+  <section class="panel">
+    <div class="empty">
+      <span>◫</span>
+      <h3>Nenhuma escala cadastrada</h3>
+      <p>Cadastre um profissional antes de configurar seus horários.</p>
+    </div>
+  </section>
+} @else {
+  <section class="schedule-cards">
+    @for (item of schedules(); track item["id"]) {
+      <article class="schedule-card" [class.inactive]="!item['active']">
+        <div class="professional-mark">
+          {{ (item["professional_name"] + "").slice(0, 1) }}
+        </div>
+        <div class="schedule-info">
+          <div class="schedule-title">
+            <div>
+              <h3>{{ item["professional_name"] }}</h3>
+              <p>
+                {{ item["unit_name"] }} ·
+                {{ item["room_name"] || "Sem sala fixa" }}
+              </p>
+            </div>
+            <span class="badge" [class.inactive]="!item['active']">{{
+              item["active"] ? "Ativa" : "Inativa"
+            }}</span>
+          </div>
+          <div class="schedule-meta">
+            <div>
+              <small>VIGÊNCIA</small
+              ><strong
+                >{{ item["valid_from"] }} a {{ item["valid_until"] }}</strong
+              >
+            </div>
+            <div>
+              <small>DIAS E JORNADA</small><strong>{{ item["shifts"] }}</strong>
+            </div>
+            <div>
+              <small>ATENDIMENTOS</small
+              ><strong
+                >{{ item["slot_duration_minutes"] }} min ·
+                {{ item["capacity"] }} vaga(s)</strong
+              >
+            </div>
+            <div>
+              <small>HORÁRIOS GERADOS</small
+              ><strong>{{ item["slots_count"] }}</strong>
+            </div>
+          </div>
+          <div class="schedule-actions">
+            <button class="link-button" (click)="edit(item)">Editar horários</button>
+            <button class="link-button schedule-toggle" (click)="toggle(item)">
+              {{ item["active"] ? "Desativar escala" : "Ativar escala" }}
+            </button>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+}

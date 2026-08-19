@@ -1,0 +1,86 @@
+<main class="display-shell">
+  @if (loading()) {
+    <div class="display-state">
+      <span class="display-logo">C</span>
+      <h1>Preparando painel…</h1>
+    </div>
+  } @else if (offline() && !panel()) {
+    <div class="display-state">
+      <span class="display-logo">!</span>
+      <h1>Painel indisponível</h1>
+      <p>Verifique a conexão ou a configuração desta tela.</p>
+    </div>
+  } @else if (panel(); as currentPanel) {
+    <header class="display-header">
+      <div class="display-brand">
+        <span class="display-logo">C</span>
+        <div><strong>Catraca</strong><small>Painel de chamadas</small></div>
+      </div>
+      <div class="location">
+        <strong>{{ currentPanel.unitName }}</strong>
+        <span>{{ currentPanel.floor || currentPanel.name }}</span>
+      </div>
+      <div class="display-time">
+        <strong>{{ now() | date: "HH:mm" }}</strong>
+        <span>{{ now() | date: "EEEE, dd 'de' MMMM" : "" : "pt-BR" }}</span>
+      </div>
+    </header>
+
+    <section class="display-content">
+      <article class="current-call">
+        <span class="call-label">CHAMADA ATUAL</span>
+        @if (currentCall(); as call) {
+          <div class="ticket-code">{{ call.displayCode }}</div>
+          <p>{{ statusLabel(call.status) }}</p>
+          <div class="destination">
+            <small>DESTINO</small>
+            <strong>{{ destination(call) }}</strong>
+            @if (call.floor) {
+              <span>{{ call.floor }}</span>
+            }
+          </div>
+        } @else {
+          <div class="waiting-visual"><i></i><i></i><i></i></div>
+          <h2>Aguardando a próxima chamada</h2>
+          <p>As novas fichas aparecerão automaticamente.</p>
+        }
+      </article>
+
+      <aside class="recent-panel">
+        <div class="recent-title"><span>ÚLTIMAS CHAMADAS</span><i></i></div>
+        @if (!recentCalls().length) {
+          <div class="recent-empty">Nenhuma chamada anterior.</div>
+        } @else {
+          <div class="recent-list">
+            @for (
+              call of recentCalls();
+              track call.displayCode + call.calledAt
+            ) {
+              <article>
+                <strong>{{ call.displayCode }}</strong>
+                <div>
+                  <b>{{ destination(call) }}</b>
+                  <span>{{ call.calledAt | date: "HH:mm" }}</span>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </aside>
+    </section>
+
+    <footer class="display-footer">
+      <div>
+        <i [class.offline]="offline()"></i
+        >{{ offline() ? "Reconectando…" : "Conectado em tempo real" }}
+      </div>
+      <span>{{ currentPanel.name }}</span>
+      <div class="display-controls">
+        @if (currentPanel.audioEnabled && !soundUnlocked()) {
+          <button (click)="enableSound()">Ativar som</button>
+        }
+        <button (click)="fullscreen()">Tela cheia</button>
+      </div>
+    </footer>
+  }
+</main>

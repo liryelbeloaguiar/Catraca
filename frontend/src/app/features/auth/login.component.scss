@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+@media (max-width: 620px) {
+  .login-page .auth-brand {
+    min-height: 88px;
+    padding: 22px 20px;
+    justify-content: center;
+  }
+
+  .login-page .brand-message,
+  .login-page .trust-row {
+    display: none;
+  }
+
+  .login-page .auth-card-wrap {
+    align-items: start;
+    padding: 34px 20px 28px;
+  }
+
+  .login-page .auth-card {
+    gap: 18px;
+  }
+
+  .login-page .auth-card h2 {
+    font-size: 28px;
+  }
+}

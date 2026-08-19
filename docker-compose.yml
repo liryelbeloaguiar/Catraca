@@ -1,0 +1,31 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://host.docker.internal:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-}
+      ALLOWED_ORIGIN: http://localhost:4200
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SMTP_ENABLED: ${SMTP_ENABLED:-false}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SPRING_PROFILES_ACTIVE: local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports: ["8080:8080"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  frontend:
+    build: ./frontend
+    ports: ["4200:80"]
+    depends_on:
+      backend: { condition: service_healthy }
