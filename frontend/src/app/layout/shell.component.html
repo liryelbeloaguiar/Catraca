@@ -1,9 +1,10 @@
 <div class="app-shell" [class.menu-open]="menuOpen()">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navegação principal">
     <a class="brand" routerLink="/painel"
       ><span class="brand-mark">C</span><span>Catraca</span></a
     >
-    <nav aria-label="Menu principal">
+    <button class="sidebar-close" type="button" aria-label="Fechar menu" (click)="menuOpen.set(false)">×</button>
+    <nav id="main-navigation" aria-label="Menu principal" (click)="menuOpen.set(false)">
       <a routerLink="/painel" routerLinkActive="active"
         ><span>⌂</span>Visão geral</a
       >
@@ -100,11 +101,26 @@
   </aside>
   <section class="workspace">
     <header class="topbar">
-      <button class="menu-button" (click)="menuOpen.set(!menuOpen())">
+      <button
+        class="menu-button"
+        type="button"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="main-navigation"
+        aria-label="Abrir menu"
+        (click)="menuOpen.set(!menuOpen())"
+      >
         ☰
       </button>
       <span class="topbar-title">Central de atendimento</span>
-      <div class="status"><i></i>Sistema online</div>
+      <div
+        class="status"
+        [class.offline]="systemStatus() === 'offline'"
+        [class.checking]="systemStatus() === 'checking'"
+        role="status"
+        aria-live="polite"
+      >
+        <i></i>{{ systemStatusLabel() }}
+      </div>
     </header>
     <main class="content"><router-outlet /></main>
   </section>

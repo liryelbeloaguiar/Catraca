@@ -34,7 +34,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "catraca:build:production" },
-            "development": { "buildTarget": "catraca:build:development" }
+            "development": {
+              "buildTarget": "catraca:build:development",
+              "proxyConfig": "proxy.conf.json"
+            }
           },
           "defaultConfiguration": "development"
         }

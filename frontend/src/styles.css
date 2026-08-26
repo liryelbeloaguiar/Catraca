@@ -946,3 +946,76 @@ textarea:focus {
     display: none !important;
   }
 }
+
+
+/* Acessibilidade e navegação móvel */
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.sidebar-close {
+  display: none;
+  align-self: flex-end;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .menu-open::before {
+    content: "";
+    position: fixed;
+    z-index: 9;
+    inset: 0;
+    background: rgba(12, 45, 51, 0.34);
+  }
+
+  .sidebar-close {
+    display: block;
+    margin: -18px 2px 10px auto;
+  }
+
+  .menu-button {
+    cursor: pointer;
+    color: var(--ink);
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .menu-button:hover {
+    background: var(--mint);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.status.offline {
+  color: #a4493f;
+}
+
+.status.offline i {
+  background: #c85a4c;
+  box-shadow: 0 0 0 4px #fbe8e5;
+}
+
+.status.checking {
+  color: #8a6a32;
+}
+
+.status.checking i {
+  background: #d6a13c;
+  box-shadow: 0 0 0 4px #fff4d9;
+}

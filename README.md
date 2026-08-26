@@ -12,6 +12,7 @@ Monólito modular para agendamento, filas e gestão operacional de atendimentos.
 ## Executar localmente
 
 ```bash
+cp .env.example .env
 docker compose up --build -d
 ```
 

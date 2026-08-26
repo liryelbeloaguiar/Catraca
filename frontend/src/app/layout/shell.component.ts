@@ -8,6 +8,8 @@ import {
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { AuthService } from "../core/auth.service";
 
+type SystemStatus = "checking" | "online" | "offline";
+
 @Component({
   selector: "app-shell",
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
@@ -18,10 +20,16 @@ import { AuthService } from "../core/auth.service";
 export class ShellComponent implements OnDestroy {
   readonly menuOpen = signal(false);
   readonly avatarUrl = signal<string | null>(null);
+  readonly systemStatus = signal<SystemStatus>("checking");
   constructor(
     readonly auth: AuthService,
     private readonly http: HttpClient,
   ) {
+    this.http.get<{ status?: string }>("/healthz").subscribe({
+      next: (health) => this.systemStatus.set(health.status === "UP" ? "online" : "offline"),
+      error: () => this.systemStatus.set("offline"),
+    });
+
     this.http
       .get<{ id: string; hasAvatar: boolean }>("/api/v1/profile")
       .subscribe((profile) => {
@@ -59,6 +67,15 @@ export class ShellComponent implements OnDestroy {
     };
     return names[role] ?? role;
   }
+  systemStatusLabel(): string {
+    const labels: Record<SystemStatus, string> = {
+      checking: "Verificando sistema",
+      online: "Sistema online",
+      offline: "Sistema indisponível",
+    };
+    return labels[this.systemStatus()];
+  }
+
   ngOnDestroy(): void {
     if (this.avatarUrl()) URL.revokeObjectURL(this.avatarUrl()!);
   }
