@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { NgIcon } from "@ng-icons/core";
 import {
   lucideArrowRight,
+  lucideArrowLeft,
   lucideBell,
   lucideBriefcaseMedical,
   lucideBuilding2,
@@ -37,6 +38,7 @@ import {
 const icons = {
   appointments: lucideCalendarDays,
   arrowRight: lucideArrowRight,
+  arrowLeft: lucideArrowLeft,
   audit: lucideScrollText,
   bell: lucideBell,
   building: lucideBuilding2,

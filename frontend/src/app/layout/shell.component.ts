@@ -8,6 +8,8 @@ import {
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { AuthService } from "../core/auth.service";
 import { AppIconComponent } from "../shared/app-icon.component";
+import { AvatarService } from "../shared/avatar.service";
+import { roleLabel } from "../shared/role-labels";
 
 type SystemStatus = "checking" | "online" | "offline";
 
@@ -25,6 +27,7 @@ export class ShellComponent implements OnDestroy {
   constructor(
     readonly auth: AuthService,
     private readonly http: HttpClient,
+    private readonly avatars: AvatarService,
   ) {
     this.http.get<{ status?: string }>("/healthz").subscribe({
       next: (health) => this.systemStatus.set(health.status === "UP" ? "online" : "offline"),
@@ -35,10 +38,8 @@ export class ShellComponent implements OnDestroy {
       .get<{ id: string; hasAvatar: boolean }>("/api/v1/profile")
       .subscribe((profile) => {
         if (profile.hasAvatar)
-          this.http
-            .get(`/api/v1/profile/avatar/${profile.id}`, {
-              responseType: "blob",
-            })
+          this.avatars
+            .load(profile.id)
             .subscribe((blob) => this.avatarUrl.set(URL.createObjectURL(blob)));
       });
   }
@@ -56,17 +57,7 @@ export class ShellComponent implements OnDestroy {
         .session()
         ?.authorities.find((authority) => authority.startsWith("ROLE_"))
         ?.replace("ROLE_", "") ?? "USUÁRIO";
-    const names: Record<string, string> = {
-      DEV_ADMIN: "Administrador técnico",
-      ADMIN_USER: "Administrador de usuários",
-      ADMIN: "Administrador",
-      PATIENT: "Paciente",
-      DOCTOR: "Médico",
-      PROFESSIONAL: "Profissional",
-      RECEPTIONIST: "Recepcionista",
-      COUNTER_ATTENDANT: "Atendente de guichê",
-    };
-    return names[role] ?? role;
+    return roleLabel(role);
   }
   systemStatusLabel(): string {
     const labels: Record<SystemStatus, string> = {

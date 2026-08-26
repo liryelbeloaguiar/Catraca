@@ -1,5 +1,6 @@
 <section class="page-head">
   <div>
+    <app-back-button />
     <span class="eyebrow">CONTA</span>
     <h1>Meu perfil</h1>
     <p>Atualize seus dados pessoais, sua foto e sua senha.</p>
@@ -30,7 +31,7 @@
         <input
           type="file"
           accept="image/png,image/jpeg,image/webp"
-          (change)="uploadAvatar($event)"
+          (change)="selectAvatar($event)"
           [disabled]="uploading()"
         />
       </label>
@@ -119,4 +120,11 @@
       </form>
     </div>
   </section>
+}
+@if (cropSourceUrl(); as sourceUrl) {
+  <app-image-cropper
+    [sourceUrl]="sourceUrl"
+    (cancel)="closeCropper()"
+    (confirm)="uploadAvatar($event)"
+  />
 }

@@ -86,7 +86,7 @@
         @if (calledTicket()) {
           <strong class="called-ticket">{{ calledTicket() }}</strong>
         } @else {
-          <p>A prioridade e o tempo de espera definem a próxima ficha.</p>
+          <p>Maior pontuação primeiro: peso + 1 ponto a cada 15 minutos de espera. Empates usam horário agendado e entrada na fila.</p>
         }
         <button
           class="button primary wide"

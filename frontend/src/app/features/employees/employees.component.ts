@@ -16,6 +16,8 @@ import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
 import { roleLabel } from "../../shared/role-labels";
 import { AppIconComponent } from "../../shared/app-icon.component";
+import { AvatarService } from "../../shared/avatar.service";
+import { BackButtonComponent } from "../../shared/ui/back-button.component";
 
 interface Employee {
   id: string;
@@ -23,6 +25,7 @@ interface Employee {
   email: string;
   phone?: string;
   active: boolean;
+  hasAvatar: boolean;
   employeeNumber: string;
   badgeCode: string;
   jobTitle: string;
@@ -37,7 +40,7 @@ interface RoleOption {
 
 @Component({
   selector: "app-employees",
-  imports: [ReactiveFormsModule, AppIconComponent],
+  imports: [ReactiveFormsModule, AppIconComponent, BackButtonComponent],
   templateUrl: "./employees.component.html",
   styleUrl: "./employees.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +57,7 @@ export class EmployeesComponent implements OnDestroy {
   readonly showForm = signal(false);
   readonly badge = signal<Employee | null>(null);
   readonly badgeAvatarUrl = signal<string | null>(null);
+  readonly badgePhotoState = signal<"idle" | "loading" | "ready" | "unavailable" | "error">("idle");
   readonly message = signal("");
   readonly success = signal("");
   readonly establishmentName = signal("Catraca");
@@ -87,7 +91,10 @@ export class EmployeesComponent implements OnDestroy {
     defaultDurationMinutes: new FormControl(30, { nonNullable: true }),
   });
 
-  constructor(private readonly http: HttpClient) {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly avatars: AvatarService,
+  ) {
     this.load();
   }
 
@@ -157,12 +164,22 @@ export class EmployeesComponent implements OnDestroy {
   openBadge(employee: Employee): void {
     this.releaseBadgeAvatar();
     this.badge.set(employee);
-    this.avatarRequest = this.http
-      .get(`/api/v1/profile/avatar/${employee.id}`, { responseType: "blob" })
+    if (!employee.hasAvatar) {
+      this.badgePhotoState.set("unavailable");
+      return;
+    }
+    this.badgePhotoState.set("loading");
+    this.avatarRequest = this.avatars
+      .load(employee.id)
       .subscribe({
-        next: (blob) =>
-          this.badgeAvatarUrl.set(URL.createObjectURL(blob)),
-        error: () => this.badgeAvatarUrl.set(null),
+        next: (blob) => {
+          this.badgeAvatarUrl.set(URL.createObjectURL(blob));
+          this.badgePhotoState.set("ready");
+        },
+        error: () => {
+          this.badgeAvatarUrl.set(null);
+          this.badgePhotoState.set("error");
+        },
       });
   }
   closeBadge(): void {
@@ -188,6 +205,7 @@ export class EmployeesComponent implements OnDestroy {
     const current = this.badgeAvatarUrl();
     if (current) URL.revokeObjectURL(current);
     this.badgeAvatarUrl.set(null);
+    this.badgePhotoState.set("idle");
   }
 
   private load(): void {

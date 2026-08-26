@@ -78,8 +78,10 @@ public class AppointmentController {
 
     @PostMapping("/{id}/status")
     @PreAuthorize("hasAuthority('APPOINTMENT_MANAGE')")
-    void status(@PathVariable UUID id, @RequestBody StatusRequest request, @AuthenticationPrincipal Jwt jwt) {
-        service.changeStatus(id, request.status(), UUID.fromString(jwt.getSubject()));
+    void status(@PathVariable UUID id, @Valid @RequestBody StatusRequest request,
+                @AuthenticationPrincipal Jwt jwt, Authentication authentication) {
+        service.changeStatus(id, request.status(), UUID.fromString(jwt.getSubject()),
+                hasAuthority(authentication, "ROLE_PATIENT"));
     }
 
     private boolean hasAuthority(Authentication authentication, String authority) {

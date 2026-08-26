@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -51,7 +52,9 @@ public class SecurityConfig {
 
     @Bean
     JwtDecoder jwtDecoder(@Value("${app.security.jwt-secret}") String secret) {
-        return NimbusJwtDecoder.withSecretKey(key(secret)).build();
+        var decoder = NimbusJwtDecoder.withSecretKey(key(secret)).build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("catraca"));
+        return decoder;
     }
 
     @Bean

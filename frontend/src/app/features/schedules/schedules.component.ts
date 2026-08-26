@@ -10,15 +10,18 @@ import { finalize, forkJoin } from "rxjs";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
 import { AppIconComponent } from "../../shared/app-icon.component";
+import { BackButtonComponent } from "../../shared/ui/back-button.component";
 
 @Component({
   selector: "app-schedules",
-  imports: [ReactiveFormsModule, AppIconComponent],
+  imports: [ReactiveFormsModule, AppIconComponent, BackButtonComponent],
   templateUrl: "./schedules.component.html",
   styleUrl: "./schedules.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchedulesComponent {
+  readonly editImpact = signal<{ futureSlots: number; removableSlots: number; preservedSlots: number; affectedAppointments: number } | null>(null);
+  readonly impactAcknowledged = signal(false);
   readonly schedules = signal<ApiRecord[]>([]);
   readonly professionals = signal<ApiRecord[]>([]);
   readonly units = signal<ApiRecord[]>([]);
@@ -184,6 +187,15 @@ export class SchedulesComponent {
     this.message.set("");
     this.success.set("");
     this.showForm.set(true);
+    this.impactAcknowledged.set(false);
+    this.http
+      .get<{ futureSlots: number; removableSlots: number; preservedSlots: number; affectedAppointments: number }>(
+        `/api/v1/schedules/${schedule["id"]}/impact`,
+      )
+      .subscribe({
+        next: (impact) => this.editImpact.set(impact),
+        error: (error) => this.message.set(errorMessage(error)),
+      });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   cancelEdit(): void {
@@ -191,10 +203,10 @@ export class SchedulesComponent {
     this.showForm.set(false);
   }
   save(): void {
-    if (this.form.invalid || !this.selectedDays().size) {
-      this.message.set(
-        "Preencha os campos e selecione ao menos um dia da semana.",
-      );
+    if (this.form.invalid || !this.selectedDays().size || (this.editImpact()?.affectedAppointments && !this.impactAcknowledged())) {
+      this.message.set(this.editImpact()?.affectedAppointments && !this.impactAcknowledged()
+        ? "Confirme que você revisou o impacto nos agendamentos existentes."
+        : "Preencha os campos e selecione ao menos um dia da semana.");
       return;
     }
     this.saving.set(true);
@@ -203,7 +215,7 @@ export class SchedulesComponent {
     const values = this.form.getRawValue();
     const id = this.editingId();
     const request = id
-      ? this.http.put<{ id: string; slotsCreated: number; patientsNotified: number }>(
+      ? this.http.put<{ id: string; slotsCreated: number; slotsRemoved: number; appointmentsPreserved: number; patientsNotified: number }>(
           `/api/v1/schedules/${id}`,
           {
             ...values,
@@ -228,7 +240,7 @@ export class SchedulesComponent {
       .subscribe({
         next: (result) => {
           this.success.set(id
-            ? `Escala atualizada, ${result.slotsCreated} horário(s) futuro(s) gerado(s) e ${"patientsNotified" in result ? result.patientsNotified : 0} paciente(s) avisado(s).`
+            ? `Escala atualizada: ${"slotsRemoved" in result ? result.slotsRemoved : 0} horário(s) livre(s) substituído(s), ${result.slotsCreated} gerado(s), ${"appointmentsPreserved" in result ? result.appointmentsPreserved : 0} agendamento(s) preservado(s) e ${"patientsNotified" in result ? result.patientsNotified : 0} paciente(s) avisado(s).`
             : `Escala criada com ${result.slotsCreated} horário(s).`);
           this.cancelEdit();
           this.load();
@@ -238,6 +250,8 @@ export class SchedulesComponent {
   }
   private resetForm(): void {
     this.editingId.set(null);
+    this.editImpact.set(null);
+    this.impactAcknowledged.set(false);
     this.selectedDays.set(new Set());
     this.form.controls.professionalId.enable();
     this.form.controls.unitId.enable();

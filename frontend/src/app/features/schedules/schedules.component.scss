@@ -184,6 +184,29 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+.impact-summary {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-soft);
+  background: var(--color-surface);
+  font-size: 12px;
+}
+.impact-summary.attention {
+  border-color: color-mix(in srgb, var(--color-warning) 35%, white);
+  background: var(--color-warning-bg);
+}
+.impact-summary label {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.impact-summary input { accent-color: var(--color-primary-600); }
 .summary-actions .button {
   padding-inline: 8px;
 }

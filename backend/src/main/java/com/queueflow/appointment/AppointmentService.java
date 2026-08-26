@@ -65,9 +65,20 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void changeStatus(UUID id, AppointmentStatus target, UUID actorId) {
-        var rows = jdbc.queryForList("SELECT status,time_slot_id FROM appointments WHERE id=? FOR UPDATE", id);
+    public void changeStatus(UUID id, AppointmentStatus target, UUID actorId, boolean patientOnly) {
+        var rows = jdbc.queryForList("""
+                SELECT appointment.status,appointment.time_slot_id,patient.user_id patient_user_id
+                FROM appointments appointment
+                LEFT JOIN patients patient ON patient.id=appointment.patient_id
+                WHERE appointment.id=? FOR UPDATE OF appointment
+                """, id);
         if (rows.isEmpty()) throw new BusinessException("APPOINTMENT_NOT_FOUND", "Agendamento não encontrado.", HttpStatus.NOT_FOUND);
+        if (patientOnly) {
+            Object owner = rows.getFirst().get("patient_user_id");
+            if (!actorId.equals(owner) || target != AppointmentStatus.CANCELLED) {
+                throw new org.springframework.security.access.AccessDeniedException("Patient cannot change this appointment");
+            }
+        }
         var current = AppointmentStatus.valueOf((String) rows.getFirst().get("status"));
         if (!allowed(current, target)) throw new BusinessException("INVALID_APPOINTMENT_STATUS", "Transição de status não permitida.", HttpStatus.CONFLICT);
         jdbc.update("UPDATE appointments SET status=?,checked_in_at=CASE WHEN ?='CHECKED_IN' THEN now() ELSE checked_in_at END,updated_at=now() WHERE id=?", target.name(), target.name(), id);

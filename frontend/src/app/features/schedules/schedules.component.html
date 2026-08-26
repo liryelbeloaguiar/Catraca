@@ -1,5 +1,6 @@
 <section class="page-head">
   <div>
+    <app-back-button />
     <span class="eyebrow">ADMINISTRAÇÃO</span>
     <h1>Escalas e horários</h1>
     <p>Organize a disponibilidade dos profissionais de forma simples.</p>
@@ -191,6 +192,17 @@
         <span>PREVISÃO</span><strong>{{ estimatedSlots() }}</strong>
         <p>horários serão gerados para o período</p>
       </div>
+      @if (editingId() && editImpact(); as impact) {
+        <div class="impact-summary" [class.attention]="impact.affectedAppointments > 0">
+          <strong>Impacto da regeneração</strong>
+          <span>{{ impact.removableSlots }} horário(s) livre(s) serão substituídos.</span>
+          <span>{{ impact.preservedSlots }} horário(s) com vínculo serão preservados.</span>
+          <span>{{ impact.affectedAppointments }} agendamento(s) ativo(s) serão notificados.</span>
+          @if (impact.affectedAppointments > 0) {
+            <label><input type="checkbox" [checked]="impactAcknowledged()" (change)="impactAcknowledged.set($any($event.target).checked)" /> Revisei o impacto e quero continuar.</label>
+          }
+        </div>
+      }
       <div class="summary-actions">
         <button
           type="button"
@@ -198,7 +210,7 @@
           (click)="cancelEdit()"
         >
           Cancelar</button
-        ><button class="button primary" [disabled]="form.invalid || saving()">
+        ><button class="button primary" [disabled]="form.invalid || saving() || (!!editImpact()?.affectedAppointments && !impactAcknowledged())">
           {{ saving() ? "Salvando…" : editingId() ? "Salvar alterações" : "Gerar escala" }}
         </button>
       </div>

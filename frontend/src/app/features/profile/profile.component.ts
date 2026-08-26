@@ -15,6 +15,9 @@ import { finalize } from "rxjs";
 import { AuthService } from "../../core/auth.service";
 import { errorMessage } from "../../shared/feedback";
 import { roleLabel } from "../../shared/role-labels";
+import { AvatarService } from "../../shared/avatar.service";
+import { ImageCropperComponent } from "../../shared/ui/image-cropper.component";
+import { BackButtonComponent } from "../../shared/ui/back-button.component";
 
 interface UserProfile {
   id: string;
@@ -32,7 +35,7 @@ interface UserProfile {
 
 @Component({
   selector: "app-profile",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ImageCropperComponent, BackButtonComponent],
   templateUrl: "./profile.component.html",
   styleUrl: "./profile.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +43,7 @@ interface UserProfile {
 export class ProfileComponent implements OnDestroy {
   readonly profile = signal<UserProfile | null>(null);
   readonly avatarUrl = signal<string | null>(null);
+  readonly cropSourceUrl = signal<string | null>(null);
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly uploading = signal(false);
@@ -73,6 +77,7 @@ export class ProfileComponent implements OnDestroy {
   constructor(
     private readonly http: HttpClient,
     private readonly auth: AuthService,
+    private readonly avatars: AvatarService,
   ) {
     this.load();
   }
@@ -120,23 +125,38 @@ export class ProfileComponent implements OnDestroy {
       });
   }
 
-  uploadAvatar(event: Event): void {
+  selectAvatar(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    const form = new FormData();
-    form.append("file", file);
+    (event.target as HTMLInputElement).value = "";
+    if (file.size > 2 * 1024 * 1024 || !["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      this.message.set("Escolha uma imagem JPG, PNG ou WebP de até 2 MB.");
+      return;
+    }
+    this.closeCropper();
+    this.cropSourceUrl.set(URL.createObjectURL(file));
+  }
+
+  uploadAvatar(file: Blob): void {
     this.uploading.set(true);
     this.clearFeedback();
-    this.http
-      .post<void>("/api/v1/profile/avatar", form)
+    this.avatars
+      .upload(file)
       .pipe(finalize(() => this.uploading.set(false)))
       .subscribe({
         next: () => {
           this.success.set("Foto atualizada com sucesso.");
+          this.closeCropper();
           this.loadAvatar();
         },
         error: (error) => this.message.set(errorMessage(error)),
       });
+  }
+
+  closeCropper(): void {
+    const current = this.cropSourceUrl();
+    if (current) URL.revokeObjectURL(current);
+    this.cropSourceUrl.set(null);
   }
 
   initials(): string {
@@ -152,6 +172,7 @@ export class ProfileComponent implements OnDestroy {
   }
   ngOnDestroy(): void {
     if (this.avatarUrl()) URL.revokeObjectURL(this.avatarUrl()!);
+    this.closeCropper();
   }
 
   private load(): void {
@@ -173,8 +194,8 @@ export class ProfileComponent implements OnDestroy {
   private loadAvatar(): void {
     const profile = this.profile();
     if (!profile) return;
-    this.http
-      .get(`/api/v1/profile/avatar/${profile.id}`, { responseType: "blob" })
+    this.avatars
+      .load(profile.id)
       .subscribe((blob) => {
         if (this.avatarUrl()) URL.revokeObjectURL(this.avatarUrl()!);
         this.avatarUrl.set(URL.createObjectURL(blob));

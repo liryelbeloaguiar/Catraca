@@ -1,5 +1,6 @@
 <section class="page-head">
   <div>
+    <app-back-button />
     <span class="eyebrow">ADMINISTRAÇÃO DE PESSOAS</span>
     <h1>Funcionários</h1>
     <p>Cadastre acessos funcionais e gere crachás virtuais.</p>
@@ -168,17 +169,26 @@
     <section class="badge-dialog" (click)="$event.stopPropagation()">
       <div class="virtual-badge" id="printable-badge">
         <header>
-          <span class="brand-mark">Q</span><strong>{{ establishmentName() }}</strong>
+          <span class="brand-mark">C</span>
+          <span><strong>{{ establishmentName() }}</strong><small>IDENTIFICAÇÃO FUNCIONAL</small></span>
         </header>
         <div class="badge-photo">
           @if (badgeAvatarUrl()) {
             <img [src]="badgeAvatarUrl()" alt="Foto de {{ employee.fullName }}" />
+          } @else if (badgePhotoState() === "loading") {
+            <span class="photo-loading" aria-label="Carregando foto"></span>
           } @else {
             {{ initials(employee) }}
           }
         </div>
-        <h2>{{ employee.fullName }}</h2>
-        <p>{{ employee.jobTitle }}</p>
+        @if (badgePhotoState() === "error") {
+          <small class="photo-warning">Não foi possível carregar a foto</small>
+        }
+        <div class="badge-identity">
+          <h2>{{ employee.fullName }}</h2>
+          <p>{{ employee.jobTitle }}</p>
+          <span>{{ employee.unitName || "Unidade não informada" }}</span>
+        </div>
         <div class="badge-meta">
           <span
             >MATRÍCULA<strong>{{ employee.employeeNumber }}</strong></span
@@ -186,7 +196,7 @@
             >IDENTIFICAÇÃO<strong>{{ employee.badgeCode }}</strong></span
           >
         </div>
-        <footer>Catraca</footer>
+        <footer><span>Catraca</span><small>Uso pessoal e intransferível</small></footer>
       </div>
       <div class="badge-actions">
         <button class="button ghost" (click)="closeBadge()">Fechar</button

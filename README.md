@@ -21,7 +21,7 @@ Neste projeto eu pratiquei a integração entre Angular e Spring Boot, autentica
 As telas abaixo só correspondem a uma pequena parte do projeto.
 
 <p align="center">
-  <img src="frontend/public/prints-sistema/Captura%20de%20tela%202026-08-26%20020616.png" alt="Tela de login do Catraca" width="47%">
+  <img src="frontend/public/prints-sistema/image.png" alt="Tela de login do Catraca" width="47%">
   <img src="frontend/public/prints-sistema/Captura%20de%20tela%202026-08-26%20020723.png" alt="Painel administrativo do Catraca" width="47%">
 </p>
 
@@ -77,3 +77,14 @@ As contas usam a senha simples `123456` somente para demonstração local. Ela n
 ## E-mail
 
 O envio é opcional. Para ativá-lo, configure `SMTP_ENABLED=true`, `SMTP_USERNAME` e `SMTP_PASSWORD`.
+
+## Ordem de chamada das filas
+
+A chamada usa uma regra determinística com envelhecimento para reduzir o risco de espera indefinida:
+
+1. calcula a pontuação efetiva como `peso da prioridade + 1 ponto por bloco completo de 15 minutos de espera`;
+2. chama primeiro a maior pontuação;
+3. em empate, prioriza o horário agendado mais antigo; fichas sem agendamento vêm depois;
+4. persistindo o empate, chama quem entrou primeiro na fila.
+
+Exemplo: uma prioridade de peso `5` começa cinco pontos à frente de uma ficha comum, mas uma ficha comum aguardando 90 minutos alcança seis pontos e passa à frente de uma prioridade recém-chegada. A seleção usa bloqueio transacional com `SKIP LOCKED`, evitando que dois guichês chamem a mesma ficha simultaneamente.

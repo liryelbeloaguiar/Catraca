@@ -86,7 +86,7 @@ td small {
   width: 54mm;
   height: 86mm;
   margin: auto;
-  padding: 5mm;
+  padding: 4.5mm;
   border-radius: 4mm;
   color: white;
   background: linear-gradient(155deg, #0b6259, #173e46);
@@ -103,6 +103,22 @@ td small {
   font-size: 10px;
   line-height: 1.2;
 }
+.virtual-badge header > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 0.5mm;
+}
+.virtual-badge header strong,
+.virtual-badge header small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.virtual-badge header small {
+  color: #bce0da;
+  font-size: 6px;
+  letter-spacing: 0.7px;
+}
 .virtual-badge header .brand-mark {
   width: 7mm;
   height: 7mm;
@@ -113,7 +129,7 @@ td small {
   width: 25mm;
   height: 25mm;
   flex: 0 0 25mm;
-  margin: 6mm auto 3mm;
+  margin: 5mm auto 2.5mm;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -129,15 +145,44 @@ td small {
   height: 100%;
   object-fit: cover;
 }
+.photo-loading {
+  width: 7mm;
+  height: 7mm;
+  border: 1mm solid #9dcdc4;
+  border-top-color: var(--color-primary-700);
+  border-radius: 50%;
+  animation: badge-spin 0.8s linear infinite;
+}
+.photo-warning {
+  margin: -1mm 0 1mm;
+  color: #ffe3a3;
+  font-size: 6px;
+}
+.badge-identity {
+  min-height: 15mm;
+}
 .virtual-badge h2 {
   margin: 0 0 1mm;
-  font-size: 16px;
-  line-height: 1.1;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.15;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .virtual-badge p {
   margin: 0;
   color: #bce0da;
   font-size: 10px;
+}
+.badge-identity > span {
+  display: block;
+  margin-top: 1mm;
+  overflow: hidden;
+  color: #8ecac0;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .badge-meta {
   display: grid;
@@ -161,12 +206,19 @@ td small {
 }
 .virtual-badge footer {
   margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 2mm;
   font-size: 7px;
   letter-spacing: 0.7px;
   text-transform: uppercase;
   color: #bce0da;
   opacity: 0.75;
 }
+.virtual-badge footer small {
+  font-size: 5.5px;
+}
+@keyframes badge-spin { to { transform: rotate(360deg); } }
 .badge-actions {
   display: flex;
   justify-content: flex-end;

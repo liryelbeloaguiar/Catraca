@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +31,15 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/v1/profile")
 public class ProfileController {
-    private static final long MAX_AVATAR_BYTES = 2 * 1024 * 1024;
-    private static final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/png", "image/webp");
     private final JdbcTemplate jdbc;
     private final PasswordEncoder passwordEncoder;
     private final AuditService audit;
+    private final AvatarImageService avatarImages;
 
-    public ProfileController(JdbcTemplate jdbc, PasswordEncoder passwordEncoder, AuditService audit) {
+    public ProfileController(JdbcTemplate jdbc, PasswordEncoder passwordEncoder, AuditService audit,
+                             AvatarImageService avatarImages) {
         this.jdbc = jdbc; this.passwordEncoder = passwordEncoder; this.audit = audit;
+        this.avatarImages = avatarImages;
     }
 
     @GetMapping
@@ -95,26 +97,26 @@ public class ProfileController {
 
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    void avatar(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) throws java.io.IOException {
-        if (file.isEmpty() || file.getSize() > MAX_AVATAR_BYTES || !ALLOWED_IMAGE_TYPES.contains(file.getContentType())) {
-            throw new BusinessException("INVALID_AVATAR", "Envie uma imagem JPG, PNG ou WebP de até 2 MB.", HttpStatus.BAD_REQUEST);
-        }
+    void avatar(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) {
+        var processed = avatarImages.process(file);
         UUID userId = UUID.fromString(jwt.getSubject());
         jdbc.update("""
                 INSERT INTO user_profiles(user_id,avatar_data,avatar_content_type) VALUES (?,?,?)
                 ON CONFLICT(user_id) DO UPDATE SET avatar_data=EXCLUDED.avatar_data,
                     avatar_content_type=EXCLUDED.avatar_content_type,updated_at=now()
-                """, userId, file.getBytes(), file.getContentType());
-        audit.record(userId, "AVATAR_UPDATE", "user", userId, java.util.Map.of("contentType", file.getContentType(), "size", file.getSize()));
+                """, userId, processed.content(), processed.contentType());
+        audit.record(userId, "AVATAR_UPDATE", "user", userId,
+                java.util.Map.of("contentType", processed.contentType(), "size", processed.content().length));
     }
 
     @GetMapping("/avatar/{userId}")
+    @PreAuthorize("#userId.toString() == authentication.name or hasAuthority('EMPLOYEE_MANAGE')")
     ResponseEntity<byte[]> avatar(@PathVariable UUID userId) {
         var images = jdbc.query("SELECT avatar_data,avatar_content_type FROM user_profiles WHERE user_id=? AND avatar_data IS NOT NULL",
                 (result, row) -> new Avatar(result.getBytes("avatar_data"), result.getString("avatar_content_type")), userId);
         if (images.isEmpty()) return ResponseEntity.notFound().build();
         var image = images.getFirst();
-        return ResponseEntity.ok().cacheControl(CacheControl.noCache()).header(HttpHeaders.CONTENT_TYPE, image.contentType()).body(image.content());
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).header(HttpHeaders.CONTENT_TYPE, image.contentType()).body(image.content());
     }
 
     private String blankToNull(String value) { return value == null || value.isBlank() ? null : value.trim(); }

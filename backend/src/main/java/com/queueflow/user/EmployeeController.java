@@ -52,7 +52,7 @@ public class EmployeeController {
     List<EmployeeResponse> list(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="50") int size) {
         int safeSize = Math.min(Math.max(size, 1), 100);
         return jdbc.query("""
-                SELECT u.id,u.full_name,u.email,u.active,up.phone,ep.employee_number,ep.badge_code,
+                SELECT u.id,u.full_name,u.email,u.active,up.phone,(up.avatar_data IS NOT NULL) has_avatar,ep.employee_number,ep.badge_code,
                        ep.job_title,ep.hired_on,un.name unit_name,string_agg(r.code,',') roles
                 FROM employee_profiles ep
                 JOIN users u ON u.id=ep.user_id
@@ -60,7 +60,7 @@ public class EmployeeController {
                 LEFT JOIN units un ON un.id=ep.unit_id
                 LEFT JOIN user_roles ur ON ur.user_id=u.id
                 LEFT JOIN roles r ON r.id=ur.role_id
-                GROUP BY u.id,up.phone,ep.employee_number,ep.badge_code,ep.job_title,ep.hired_on,un.name
+                GROUP BY u.id,up.phone,up.avatar_data,ep.employee_number,ep.badge_code,ep.job_title,ep.hired_on,un.name
                 ORDER BY u.full_name LIMIT ? OFFSET ?
                 """, (result, row) -> map(result), safeSize, Math.max(page, 0) * safeSize);
     }
@@ -137,19 +137,19 @@ public class EmployeeController {
 
     private EmployeeResponse find(UUID userId) {
         return jdbc.query("""
-                SELECT u.id,u.full_name,u.email,u.active,up.phone,ep.employee_number,ep.badge_code,
+                SELECT u.id,u.full_name,u.email,u.active,up.phone,(up.avatar_data IS NOT NULL) has_avatar,ep.employee_number,ep.badge_code,
                        ep.job_title,ep.hired_on,un.name unit_name,string_agg(r.code,',') roles
                 FROM employee_profiles ep JOIN users u ON u.id=ep.user_id
                 LEFT JOIN user_profiles up ON up.user_id=u.id LEFT JOIN units un ON un.id=ep.unit_id
                 LEFT JOIN user_roles ur ON ur.user_id=u.id LEFT JOIN roles r ON r.id=ur.role_id
-                WHERE u.id=? GROUP BY u.id,up.phone,ep.employee_number,ep.badge_code,ep.job_title,ep.hired_on,un.name
+                WHERE u.id=? GROUP BY u.id,up.phone,up.avatar_data,ep.employee_number,ep.badge_code,ep.job_title,ep.hired_on,un.name
                 """, (result, row) -> map(result), userId).stream().findFirst()
                 .orElseThrow(() -> new BusinessException("EMPLOYEE_NOT_FOUND", "Funcionário não encontrado.", HttpStatus.NOT_FOUND));
     }
 
     private EmployeeResponse map(java.sql.ResultSet result) throws java.sql.SQLException {
         return new EmployeeResponse(UUID.fromString(result.getString("id")), result.getString("full_name"), result.getString("email"),
-                result.getString("phone"), result.getBoolean("active"), result.getString("employee_number"), result.getString("badge_code"),
+                result.getString("phone"), result.getBoolean("active"), result.getBoolean("has_avatar"), result.getString("employee_number"), result.getString("badge_code"),
                 result.getString("job_title"), result.getObject("hired_on", LocalDate.class), result.getString("unit_name"),
                 result.getString("roles") == null ? List.of() : List.of(result.getString("roles").split(",")));
     }
@@ -162,7 +162,7 @@ public class EmployeeController {
                                  @Size(max=30) String phone, UUID unitId, LocalDate hiredOn,
                                  UUID professionalTypeId, UUID specialtyId, @Size(max=60) String registrationNumber,
                                  Integer defaultDurationMinutes) {}
-    public record EmployeeResponse(UUID id, String fullName, String email, String phone, boolean active,
+    public record EmployeeResponse(UUID id, String fullName, String email, String phone, boolean active, boolean hasAvatar,
                                    String employeeNumber, String badgeCode, String jobTitle, LocalDate hiredOn,
                                    String unitName, List<String> roles) {}
     public record ActiveRequest(boolean active) {}

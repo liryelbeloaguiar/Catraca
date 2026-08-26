@@ -1,14 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, finalize, shareReplay, tap } from 'rxjs';
+import { Observable, catchError, finalize, of, shareReplay, tap } from 'rxjs';
 import { AuthResponse } from './models';
-
-const SESSION_KEY = 'catraca.session';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly sessionState = signal<AuthResponse | null>(this.restore());
+  private readonly sessionState = signal<AuthResponse | null>(null);
   private refreshInFlight: Observable<AuthResponse> | null = null;
 
   readonly session = this.sessionState.asReadonly();
@@ -43,6 +41,11 @@ export class AuthService {
     return this.refreshInFlight;
   }
 
+  ensureSession(): Observable<AuthResponse | null> {
+    const current = this.sessionState();
+    return current ? of(current) : this.refresh().pipe(catchError(() => of(null)));
+  }
+
   logout(): void {
     this.http.post<void>('/api/v1/auth/logout', {}, { withCredentials: true }).subscribe({ error: () => undefined });
     this.clearSession();
@@ -50,7 +53,6 @@ export class AuthService {
   }
 
   clearSession(): void {
-    sessionStorage.removeItem(SESSION_KEY);
     this.sessionState.set(null);
   }
 
@@ -68,18 +70,6 @@ export class AuthService {
   }
 
   private store(session: AuthResponse): void {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     this.sessionState.set(session);
-  }
-
-  private restore(): AuthResponse | null {
-    const serialized = sessionStorage.getItem(SESSION_KEY);
-    if (!serialized) return null;
-    try {
-      return JSON.parse(serialized) as AuthResponse;
-    } catch {
-      sessionStorage.removeItem(SESSION_KEY);
-      return null;
-    }
   }
 }

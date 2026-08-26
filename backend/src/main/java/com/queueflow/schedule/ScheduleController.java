@@ -81,6 +81,28 @@ public class ScheduleController {
                 """, safeSize, Math.max(page, 0) * safeSize);
     }
 
+    @GetMapping("/{id}/impact")
+    EditImpact impact(@PathVariable UUID id) {
+        return jdbc.query("""
+                SELECT count(slot.id) FILTER (WHERE slot.starts_at>=now()) future_slots,
+                       count(*) FILTER (WHERE slot.starts_at>=now() AND slot.booked_count=0
+                           AND NOT EXISTS(SELECT 1 FROM appointments appointment WHERE appointment.time_slot_id=slot.id)) removable_slots,
+                       count(*) FILTER (WHERE slot.starts_at>=now() AND (slot.booked_count>0
+                           OR EXISTS(SELECT 1 FROM appointments appointment WHERE appointment.time_slot_id=slot.id))) preserved_slots,
+                       (SELECT count(*) FROM appointments appointment
+                        JOIN time_slots appointment_slot ON appointment_slot.id=appointment.time_slot_id
+                        WHERE appointment_slot.schedule_id=? AND appointment_slot.starts_at>=now()
+                          AND appointment.status NOT IN ('CANCELLED','COMPLETED','NO_SHOW','RESCHEDULED')) affected_appointments
+                FROM schedules schedule
+                LEFT JOIN time_slots slot ON slot.schedule_id=schedule.id
+                WHERE schedule.id=? GROUP BY schedule.id
+                """, (result, row) -> new EditImpact(
+                        result.getInt("future_slots"), result.getInt("removable_slots"),
+                        result.getInt("preserved_slots"), result.getInt("affected_appointments")), id, id)
+                .stream().findFirst()
+                .orElseThrow(() -> new BusinessException("SCHEDULE_NOT_FOUND", "Escala não encontrada.", HttpStatus.NOT_FOUND));
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
@@ -114,7 +136,7 @@ public class ScheduleController {
                     "Profissional e unidade não podem ser trocados. Crie outra escala para essa alteração.", HttpStatus.CONFLICT);
         }
         Instant now = Instant.now();
-        jdbc.update("""
+        int slotsRemoved = jdbc.update("""
                 DELETE FROM time_slots slot
                 WHERE slot.schedule_id=? AND slot.starts_at>=? AND slot.booked_count=0
                   AND NOT EXISTS(SELECT 1 FROM appointments appointment WHERE appointment.time_slot_id=slot.id)
@@ -126,10 +148,20 @@ public class ScheduleController {
         LocalDate firstDate = request.validFrom().isAfter(LocalDate.now(zoneId))
                 ? request.validFrom() : LocalDate.now(zoneId);
         int slotsCreated = generateSlots(id, existing.professionalId(), values, firstDate, now);
+        Integer appointmentsPreserved = jdbc.queryForObject("""
+                SELECT count(*) FROM appointments appointment
+                JOIN time_slots slot ON slot.id=appointment.time_slot_id
+                WHERE slot.schedule_id=? AND slot.starts_at>=now()
+                  AND appointment.status NOT IN ('CANCELLED','COMPLETED','NO_SHOW','RESCHEDULED')
+                """, Integer.class, id);
         int notified = notifications.notifyScheduleChange(id, "A escala ou o horário foi alterado");
         audit.record(UUID.fromString(jwt.getSubject()), "SCHEDULE_UPDATE", "schedule", id,
-                Map.of("slotsCreated", slotsCreated, "patientsNotified", notified, "zoneId", zoneId.getId()));
-        return Map.of("id", id, "slotsCreated", slotsCreated, "patientsNotified", notified);
+                Map.of("slotsCreated", slotsCreated, "slotsRemoved", slotsRemoved,
+                        "appointmentsPreserved", appointmentsPreserved == null ? 0 : appointmentsPreserved,
+                        "patientsNotified", notified, "zoneId", zoneId.getId()));
+        return Map.of("id", id, "slotsCreated", slotsCreated, "slotsRemoved", slotsRemoved,
+                "appointmentsPreserved", appointmentsPreserved == null ? 0 : appointmentsPreserved,
+                "patientsNotified", notified);
     }
 
     @PatchMapping("/{id}/active")
@@ -146,7 +178,7 @@ public class ScheduleController {
 
     @PatchMapping("/time-slots/{id}/capacity")
     @Transactional
-    void capacity(@PathVariable UUID id, @RequestBody CapacityRequest request, @AuthenticationPrincipal Jwt jwt) {
+    void capacity(@PathVariable UUID id, @Valid @RequestBody CapacityRequest request, @AuthenticationPrincipal Jwt jwt) {
         int changed = jdbc.update("UPDATE time_slots SET capacity=?,version=version+1 WHERE id=? AND booked_count<=?", request.capacity(), id, request.capacity());
         if (changed == 0) throw new BusinessException("INVALID_SLOT_CAPACITY", "A capacidade não pode ser menor que os agendamentos existentes.", HttpStatus.CONFLICT);
         audit.record(UUID.fromString(jwt.getSubject()), "TIME_SLOT_CAPACITY_CHANGE", "time_slot", id, Map.of("capacity", request.capacity()));
@@ -156,7 +188,9 @@ public class ScheduleController {
         if (request.validUntil().isBefore(request.validFrom()) || request.validUntil().isAfter(request.validFrom().plusYears(1)))
             throw new BusinessException("INVALID_SCHEDULE_PERIOD", "O período da escala deve ter no máximo um ano.", HttpStatus.BAD_REQUEST);
         if (!request.endTime().isAfter(request.startTime())) throw new BusinessException("INVALID_SCHEDULE_TIME", "O horário final deve ser posterior ao inicial.", HttpStatus.BAD_REQUEST);
-        if ((request.breakStart() == null) != (request.breakEnd() == null) || (request.breakStart() != null && !request.breakEnd().isAfter(request.breakStart())))
+        if ((request.breakStart() == null) != (request.breakEnd() == null)
+                || (request.breakStart() != null && (!request.breakEnd().isAfter(request.breakStart())
+                || request.breakStart().isBefore(request.startTime()) || request.breakEnd().isAfter(request.endTime()))))
             throw new BusinessException("INVALID_BREAK", "Informe um intervalo válido.", HttpStatus.BAD_REQUEST);
         if (request.daysOfWeek().stream().anyMatch(day -> day < 1 || day > 7)) throw new BusinessException("INVALID_WEEK_DAY", "Dia da semana inválido.", HttpStatus.BAD_REQUEST);
     }
@@ -207,6 +241,7 @@ public class ScheduleController {
                                  @Min(5) @Max(480) int slotDurationMinutes, @Min(1) @Max(100) int capacity) {}
     public record ActiveRequest(boolean active) {}
     public record CapacityRequest(@Min(1) @Max(100) int capacity) {}
+    public record EditImpact(int futureSlots, int removableSlots, int preservedSlots, int affectedAppointments) {}
     public record UpdateSchedule(@NotNull UUID professionalId, @NotNull UUID unitId, UUID roomId,
                                  @NotNull LocalDate validFrom, @NotNull LocalDate validUntil,
                                  @NotEmpty Set<Integer> daysOfWeek, @NotNull LocalTime startTime, @NotNull LocalTime endTime,

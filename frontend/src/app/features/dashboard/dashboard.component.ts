@@ -70,7 +70,7 @@ import { AppIconComponent } from "../../shared/app-icon.component";
           <b><app-icon name="arrowRight" /></b></a
         >
       }
-    </section>
+    </section>`,
 })
 export class DashboardComponent {
   readonly today = new Intl.DateTimeFormat("pt-BR", {

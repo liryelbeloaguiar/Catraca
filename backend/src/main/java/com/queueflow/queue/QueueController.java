@@ -1,5 +1,7 @@
 package com.queueflow.queue;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,7 @@ public class QueueController {
     private final QueueService service;
     public QueueController(QueueService service){this.service=service;}
     @PostMapping("/entries") @ResponseStatus(HttpStatus.CREATED) @PreAuthorize("hasAuthority('QUEUE_MANAGE')")
-    QueueService.Ticket enqueue(@PathVariable UUID queueId,@RequestBody EnqueueRequest request,@AuthenticationPrincipal Jwt jwt){return service.enqueue(queueId,request.patientId(),request.appointmentId(),request.priorityId(),UUID.fromString(jwt.getSubject()));}
+    QueueService.Ticket enqueue(@PathVariable UUID queueId,@Valid @RequestBody EnqueueRequest request,@AuthenticationPrincipal Jwt jwt){return service.enqueue(queueId,request.patientId(),request.appointmentId(),request.priorityId(),UUID.fromString(jwt.getSubject()));}
     @PostMapping("/call-next") @PreAuthorize("hasAuthority('QUEUE_MANAGE')")
     Map<String,Object> callNext(@PathVariable UUID queueId, @RequestBody(required=false) CallNextRequest request,
                                 @AuthenticationPrincipal Jwt jwt) {
@@ -21,6 +23,6 @@ public class QueueController {
         return service.callNext(queueId, UUID.fromString(jwt.getSubject()),
                 safeRequest.counterId(), safeRequest.roomId());
     }
-    public record EnqueueRequest(UUID patientId,UUID appointmentId,UUID priorityId){}
+    public record EnqueueRequest(@NotNull UUID patientId,UUID appointmentId,UUID priorityId){}
     public record CallNextRequest(UUID counterId, UUID roomId) {}
 }
