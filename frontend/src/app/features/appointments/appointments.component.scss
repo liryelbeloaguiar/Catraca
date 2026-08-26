@@ -10,7 +10,7 @@
 .schedule-grid label {
   display: grid;
   gap: 8px;
-  color: #31484d;
+  color: var(--color-text-soft);
   font-size: 13px;
   font-weight: 600;
 }
@@ -18,14 +18,14 @@
 .schedule-grid input {
   width: 100%;
   padding: 13px 14px;
-  border: 1px solid #d7e1df;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   outline: none;
   color: #182e35;
-  background: #fbfcfc;
+  background: var(--color-surface-muted);
 }
 .schedule-grid select:focus {
-  border-color: #087c6c;
+  border-color: var(--color-primary-600);
   box-shadow: 0 0 0 3px rgba(8, 124, 108, 0.1);
 }
 .schedule-grid small {

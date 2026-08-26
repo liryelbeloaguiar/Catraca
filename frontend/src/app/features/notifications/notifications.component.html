@@ -15,7 +15,7 @@
 } @else if (!rows().length) {
   <section class="panel">
     <div class="empty">
-      <span>○</span>
+      <app-icon name="inbox" />
       <h3>Nenhuma notificação</h3>
       <p>Alterações que afetem agendamentos aparecerão aqui.</p>
     </div>
@@ -24,7 +24,7 @@
   <section class="notification-list">
     @for (row of rows(); track row["id"]) {
       <article class="notification-card" [class.unread]="!row['read_at']">
-        <span class="notice-icon">!</span>
+        <span class="notice-icon"><app-icon name="bell" /></span>
         <div>
           <header>
             <div>

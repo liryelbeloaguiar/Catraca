@@ -9,6 +9,7 @@ import {
 import { finalize, forkJoin } from "rxjs";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 interface DisplayPanel {
   id: string;
@@ -27,7 +28,7 @@ interface DisplayPanel {
 
 @Component({
   selector: "app-display-panels",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AppIconComponent],
   templateUrl: "./display-panels.component.html",
   styleUrl: "./display-panels.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -15,6 +15,7 @@ import { finalize, forkJoin, Subscription } from "rxjs";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
 import { roleLabel } from "../../shared/role-labels";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 interface Employee {
   id: string;
@@ -36,7 +37,7 @@ interface RoleOption {
 
 @Component({
   selector: "app-employees",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AppIconComponent],
   templateUrl: "./employees.component.html",
   styleUrl: "./employees.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

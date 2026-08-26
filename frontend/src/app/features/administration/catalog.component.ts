@@ -4,13 +4,14 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { finalize } from 'rxjs';
 import { ApiRecord } from '../../core/models';
 import { errorMessage } from '../../shared/feedback';
+import { AppIconComponent } from '../../shared/app-icon.component';
 
 const TITLES: Record<string, string> = {
   units: 'Unidades', services: 'Serviços', specialties: 'Especialidades', priorities: 'Prioridades', rooms: 'Salas', counters: 'Guichês', queues: 'Filas', departments: 'Setores', 'professional-types': 'Tipos profissionais'
 };
 
 @Component({
-  selector: 'app-catalog', imports: [ReactiveFormsModule], changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-catalog', imports: [ReactiveFormsModule, AppIconComponent], changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="page-head"><div><span class="eyebrow">ADMINISTRAÇÃO</span><h1>{{ title() }}</h1><p>Cadastre e mantenha os recursos usados na operação.</p></div><button class="button primary" (click)="openCreate()">{{ showForm() ? 'Fechar' : '+ Novo cadastro' }}</button></section>
     @if (showForm()) {
@@ -33,7 +34,7 @@ const TITLES: Record<string, string> = {
       <div class="panel-head"><div><h2>Cadastros existentes</h2><p>{{ rows().length }} registro(s) encontrado(s)</p></div><input class="search" [formControl]="search" placeholder="Buscar por nome"></div>
       @if (loading()) { <div class="empty">Carregando…</div> }
       @else if (message() && !showForm()) { <div class="alert error space">{{ message() }}</div> }
-      @else if (!rows().length) { <div class="empty"><span>◇</span><h3>Nenhum cadastro encontrado</h3><p>Use “Novo cadastro” para inserir o primeiro registro.</p></div> }
+      @else if (!rows().length) { <div class="empty"><app-icon name="building" /><h3>Nenhum cadastro encontrado</h3><p>Use “Novo cadastro” para inserir o primeiro registro.</p></div> }
       @else {
         <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nome</th><th>Descrição</th><th>Status</th><th></th></tr></thead><tbody>
           @for (row of rows(); track row['id']) { <tr><td><code>{{ row['code'] || row['ticket_prefix'] || '—' }}</code></td><td><strong>{{ row['name'] }}</strong></td><td>{{ row['description'] || row['address'] || row['floor'] || '—' }}</td><td><span class="badge" [class.inactive]="!row['active']">{{ row['active'] ? 'Ativo' : 'Inativo' }}</span></td><td><button class="link-button" (click)="edit(row)">Editar</button> <button class="link-button" (click)="toggle(row)">{{ row['active'] ? 'Desativar' : 'Ativar' }}</button></td></tr> }

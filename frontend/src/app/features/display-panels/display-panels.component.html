@@ -5,7 +5,11 @@
     <p>Configure as telas públicas de cada guichê, andar ou setor.</p>
   </div>
   <button class="button primary" (click)="showForm.set(!showForm())">
-    {{ showForm() ? "Fechar" : "+ Novo painel" }}
+    @if (showForm()) {
+      <app-icon name="x" /> Fechar
+    } @else {
+      <app-icon name="plus" /> Novo painel
+    }
   </button>
 </section>
 
@@ -100,7 +104,7 @@
 } @else if (!panels().length) {
   <section class="panel">
     <div class="empty">
-      <span>▣</span>
+      <app-icon name="monitor" />
       <h3>Nenhum painel configurado</h3>
       <p>Crie uma tela para um guichê, andar ou conjunto de filas.</p>
     </div>
@@ -110,6 +114,7 @@
     @for (panel of panels(); track panel.id) {
       <article class="panel-card" [class.inactive]="!panel.active">
         <div class="screen-icon">
+          <app-icon name="monitor" />
           <span>{{ panel.code }}</span>
         </div>
         <div class="panel-info">
@@ -142,7 +147,7 @@
               (click)="openPanel(panel)"
               [disabled]="!panel.active"
             >
-              Abrir tela pública ↗
+              <app-icon name="externalLink" /> Abrir tela pública
             </button>
             <button class="button ghost" (click)="toggle(panel)">
               {{ panel.active ? "Desativar" : "Ativar" }}

@@ -5,6 +5,7 @@ import { FormsModule } from "@angular/forms";
 import { finalize } from "rxjs";
 import { errorMessage } from "../../shared/feedback";
 import { roleLabel } from "../../shared/role-labels";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 interface SystemUser {
   id: string;
@@ -20,7 +21,7 @@ interface SystemUser {
 
 @Component({
   selector: "app-users",
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, AppIconComponent],
   templateUrl: "./users.component.html",
   styleUrl: "./users.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

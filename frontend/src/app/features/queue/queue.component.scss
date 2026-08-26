@@ -115,7 +115,7 @@
 .destination-fields label {
   display: grid;
   gap: 8px;
-  color: #31484d;
+  color: var(--color-text-soft);
   font-size: 13px;
   font-weight: 600;
 }
@@ -123,9 +123,9 @@
   width: 100%;
   min-height: 46px;
   padding: 12px;
-  border: 1px solid #d7e1df;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: #fbfcfc;
+  background: var(--color-surface-muted);
 }
 .or-divider {
   height: 1px;

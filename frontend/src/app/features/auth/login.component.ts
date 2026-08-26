@@ -9,10 +9,11 @@ import { Router, RouterLink } from "@angular/router";
 import { finalize } from "rxjs";
 import { AuthService } from "../../core/auth.service";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 @Component({
   selector: "app-login",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AppIconComponent],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

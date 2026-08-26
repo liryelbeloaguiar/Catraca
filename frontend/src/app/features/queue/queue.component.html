@@ -25,7 +25,7 @@
       <div class="empty">Carregando filas…</div>
     } @else if (!queues().length) {
       <div class="empty">
-        <span>≋</span>
+        <app-icon name="queue" />
         <h3>Nenhuma fila cadastrada</h3>
       </div>
     } @else {
@@ -39,7 +39,7 @@
             <span
               ><strong>{{ queue["name"] }}</strong
               ><small>Fila ativa</small></span
-            ><i>✓</i>
+            ><app-icon name="check" />
           </button>
         }
       </div>
@@ -55,7 +55,7 @@
     </div>
     @if (!selectedQueue()) {
       <div class="destination-placeholder">
-        <span>▤</span>
+        <app-icon name="mapPin" />
         <p>Selecione uma fila para liberar os destinos.</p>
       </div>
     } @else {
@@ -108,7 +108,7 @@
   </div>
   @if (!panels().length) {
     <div class="empty compact">
-      <span>▣</span>
+      <app-icon name="monitor" />
       <h3>Nenhum painel ativo</h3>
       <p>O administrador precisa configurar uma tela pública.</p>
     </div>
@@ -116,12 +116,12 @@
     <div class="display-links">
       @for (panel of panels(); track panel.id) {
         <button (click)="openPanel(panel)">
-          <span>▣</span>
+          <app-icon name="monitor" />
           <div>
             <strong>{{ panel.name }}</strong
             ><small>{{ panel.unitName }} · {{ panel.floor || "Geral" }}</small>
           </div>
-          <b>Abrir ↗</b>
+          <b>Abrir <app-icon name="externalLink" /></b>
         </button>
       }
     </div>

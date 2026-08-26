@@ -1,3 +1,3 @@
-td small { color: #75868a; }
-summary { cursor: pointer; color: #087c6c; font-weight: 700; }
+td small { color: var(--color-muted-light); }
+summary { cursor: pointer; color: var(--color-primary-600); font-weight: 700; }
 pre { max-width: 380px; padding: 10px; white-space: pre-wrap; border-radius: 8px; color: #41565b; background: #f2f6f5; font-size: 10px; }

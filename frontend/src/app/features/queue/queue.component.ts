@@ -6,6 +6,7 @@ import { finalize, forkJoin } from "rxjs";
 import { AuthService } from "../../core/auth.service";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 interface DisplayPanel {
   id: string;
@@ -18,7 +19,7 @@ interface DisplayPanel {
 
 @Component({
   selector: "app-queue",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AppIconComponent],
   templateUrl: "./queue.component.html",
   styleUrl: "./queue.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -4,10 +4,11 @@ import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 import { finalize } from "rxjs";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 @Component({
   selector: "app-notifications",
-  imports: [DatePipe],
+  imports: [DatePipe, AppIconComponent],
   templateUrl: "./notifications.component.html",
   styleUrl: "./notifications.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

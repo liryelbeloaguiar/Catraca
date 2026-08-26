@@ -9,10 +9,11 @@ import {
 import { finalize, forkJoin } from "rxjs";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 @Component({
   selector: "app-schedules",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AppIconComponent],
   templateUrl: "./schedules.component.html",
   styleUrl: "./schedules.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

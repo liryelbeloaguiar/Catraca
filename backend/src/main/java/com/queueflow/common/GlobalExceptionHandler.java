@@ -20,19 +20,19 @@ public class GlobalExceptionHandler {
         var message = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining("; "));
-        return ResponseEntity.badRequest().body(ApiError.of("VALIDATION_ERROR", message));
+        return ResponseEntity.badRequest().body(ApiError.of(ErrorCode.VALIDATION_ERROR.name(), message));
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     ResponseEntity<ApiError> handleAccessDenied() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiError.of("ACCESS_DENIED", "Você não possui permissão para esta operação."));
+                .body(ApiError.of(ErrorCode.ACCESS_DENIED.name(), "Você não possui permissão para esta operação."));
     }
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> handleUnexpected(Exception exception) {
         log.error("Unhandled application error", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiError.of("INTERNAL_ERROR", "Não foi possível concluir a operação."));
+                .body(ApiError.of(ErrorCode.INTERNAL_ERROR.name(), "Não foi possível concluir a operação."));
     }
 }

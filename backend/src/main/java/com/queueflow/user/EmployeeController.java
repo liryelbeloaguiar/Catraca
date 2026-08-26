@@ -15,6 +15,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.queueflow.security.SecurityAuthorities;
+import com.queueflow.security.SecurityExpressions;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/admin/employees")
-@PreAuthorize("hasAuthority('EMPLOYEE_MANAGE')")
+@PreAuthorize(SecurityExpressions.EMPLOYEE_MANAGER)
 public class EmployeeController {
     private static final List<String> STAFF_ROLES = List.of("ADMIN_USER", "DOCTOR", "PROFESSIONAL", "RECEPTIONIST", "COUNTER_ATTENDANT");
     private final JdbcTemplate jdbc;
@@ -65,7 +67,7 @@ public class EmployeeController {
 
     @GetMapping("/roles")
     List<Map<String, String>> roles(Authentication authentication) {
-        boolean developer = hasRole(authentication, "ROLE_DEV_ADMIN");
+        boolean developer = hasRole(authentication, SecurityAuthorities.ROLE_DEV_ADMIN);
         return jdbc.query("SELECT code,name FROM roles WHERE code IN ('ADMIN_USER','DOCTOR','PROFESSIONAL','RECEPTIONIST','COUNTER_ATTENDANT') AND (? OR code<>'ADMIN_USER') ORDER BY name",
                 (result, row) -> Map.of("code", result.getString("code"), "name", result.getString("name")),
                 developer);

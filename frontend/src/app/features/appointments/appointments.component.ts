@@ -11,10 +11,11 @@ import { finalize, forkJoin, Observable } from "rxjs";
 import { AuthService } from "../../core/auth.service";
 import { ApiRecord } from "../../core/models";
 import { errorMessage } from "../../shared/feedback";
+import { AppIconComponent } from "../../shared/app-icon.component";
 
 @Component({
   selector: "app-appointments",
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, AppIconComponent],
   templateUrl: "./appointments.component.html",
   styleUrl: "./appointments.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

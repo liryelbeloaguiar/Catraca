@@ -7,12 +7,13 @@ import {
 } from "@angular/core";
 import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { AuthService } from "../core/auth.service";
+import { AppIconComponent } from "../shared/app-icon.component";
 
 type SystemStatus = "checking" | "online" | "offline";
 
 @Component({
   selector: "app-shell",
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIconComponent],
   templateUrl: "./shell.component.html",
   styleUrl: "./shell.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

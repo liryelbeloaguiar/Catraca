@@ -1,0 +1,43 @@
+:root {
+  --color-primary-700: #075c53;
+  --color-primary-600: #087c6c;
+  --color-primary-500: #15927f;
+  --color-primary-100: #dff3ed;
+  --color-primary-50: #f2f9f7;
+  --color-text: #182e35;
+  --color-text-soft: #31484d;
+  --color-muted: #64777c;
+  --color-muted-light: #75868a;
+  --color-border: #d7e1df;
+  --color-border-soft: #e4ebea;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fbfcfc;
+  --color-canvas: #f5f8f7;
+  --color-navy: #173c44;
+  --color-accent: #e98546;
+  --color-success: #08715f;
+  --color-success-bg: #e4f5f1;
+  --color-warning: #986325;
+  --color-warning-bg: #fff2db;
+  --color-danger: #a33b3b;
+  --color-danger-bg: #fff0f0;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 4px 18px rgba(20, 50, 54, 0.06);
+  --shadow-md: 0 12px 40px rgba(19, 52, 57, 0.08);
+  --transition-fast: 160ms ease;
+
+  /* Compatibilidade com os estilos existentes durante a migração. */
+  --ink: var(--color-text);
+  --muted: var(--color-muted);
+  --line: var(--color-border-soft);
+  --paper: var(--color-canvas);
+  --white: var(--color-surface);
+  --green: var(--color-primary-600);
+  --green-dark: var(--color-primary-700);
+  --mint: var(--color-primary-100);
+  --orange: var(--color-accent);
+  --navy: var(--color-navy);
+  --shadow: var(--shadow-md);
+}

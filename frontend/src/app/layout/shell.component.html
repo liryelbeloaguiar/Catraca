@@ -3,84 +3,84 @@
     <a class="brand" routerLink="/painel"
       ><span class="brand-mark">C</span><span>Catraca</span></a
     >
-    <button class="sidebar-close" type="button" aria-label="Fechar menu" (click)="menuOpen.set(false)">×</button>
+    <button class="sidebar-close" type="button" aria-label="Fechar menu" (click)="menuOpen.set(false)"><app-icon name="x" /></button>
     <nav id="main-navigation" aria-label="Menu principal" (click)="menuOpen.set(false)">
       <a routerLink="/painel" routerLinkActive="active"
-        ><span>⌂</span>Visão geral</a
+        ><app-icon name="dashboard" />Visão geral</a
       >
       <a routerLink="/meu-perfil" routerLinkActive="active"
-        ><span>○</span>Meu perfil</a
+        ><app-icon name="user" />Meu perfil</a
       >
       <a routerLink="/notificacoes" routerLinkActive="active"
-        ><span>◉</span>Notificações</a
+        ><app-icon name="bell" />Notificações</a
       >
       @if (auth.has("APPOINTMENT_READ")) {
         <a routerLink="/agendamentos" routerLinkActive="active"
-          ><span>□</span>Agendamentos</a
+          ><app-icon name="appointments" />Agendamentos</a
         >
       }
       @if (auth.has("QUEUE_READ")) {
         <a routerLink="/filas" routerLinkActive="active"
-          ><span>≋</span>Filas e fichas</a
+          ><app-icon name="queue" />Filas e fichas</a
         >
       }
       @if (auth.has("EMPLOYEE_MANAGE")) {
         <p class="nav-label">PESSOAS</p>
         <a routerLink="/funcionarios" routerLinkActive="active"
-          ><span>♙</span>Funcionários</a
+          ><app-icon name="employee" />Funcionários</a
         >
       }
       @if (auth.has("ROLE_DEV_ADMIN")) {
         <a routerLink="/usuarios" routerLinkActive="active"
-          ><span>◎</span>Todos os usuários</a
+          ><app-icon name="users" />Todos os usuários</a
         >
       }
       @if (auth.has("ADMINISTRATION_MANAGE")) {
         <p class="nav-label">ADMINISTRAÇÃO</p>
         <a routerLink="/administracao/units" routerLinkActive="active"
-          ><span>◇</span>Unidades</a
+          ><app-icon name="building" />Unidades</a
         >
         <a routerLink="/administracao/services" routerLinkActive="active"
-          ><span>＋</span>Serviços</a
+          ><app-icon name="settings" />Serviços</a
         >
         <a routerLink="/administracao/specialties" routerLinkActive="active"
-          ><span>✦</span>Especialidades</a
+          ><app-icon name="specialty" />Especialidades</a
         >
         <a routerLink="/administracao/priorities" routerLinkActive="active"
-          ><span>↑</span>Prioridades</a
+          ><app-icon name="list" />Prioridades</a
         >
         <a routerLink="/administracao/rooms" routerLinkActive="active"
-          ><span>▦</span>Salas</a
+          ><app-icon name="mapPin" />Salas</a
         >
         <a routerLink="/administracao/counters" routerLinkActive="active"
-          ><span>▤</span>Guichês</a
+          ><app-icon name="ticket" />Guichês</a
         >
         <a routerLink="/administracao/queues" routerLinkActive="active"
-          ><span>↝</span>Configurar filas</a
+          ><app-icon name="queue" />Configurar filas</a
         >
         <a
           routerLink="/administracao/professional-types"
           routerLinkActive="active"
-          ><span>♢</span>Tipos profissionais</a
+          ><app-icon name="userSettings" />Tipos profissionais</a
         >
         <a routerLink="/administracao/departments" routerLinkActive="active"
-          ><span>▥</span>Setores</a
+          ><app-icon name="department" />Setores</a
         >
         <a routerLink="/escalas" routerLinkActive="active"
-          ><span>◫</span>Escalas e horários</a
+          ><app-icon name="clock" />Escalas e horários</a
         >
         <a routerLink="/paineis" routerLinkActive="active"
-          ><span>▣</span>Painéis de chamada</a
+          ><app-icon name="monitor" />Painéis de chamada</a
         >
       }
       @if (auth.has("ROLE_ADMIN_USER") || auth.has("ROLE_DEV_ADMIN")) {
         <a routerLink="/estabelecimento" routerLinkActive="active"
-          ><span>⌂</span>Estabelecimento</a
+          ><app-icon name="hospital" />Estabelecimento</a
         >
       }
       @if (auth.has("ROLE_DEV_ADMIN")) {
         <a routerLink="/auditoria" routerLinkActive="active"
-          ><span>◷</span>Auditoria</a
+          ><app-icon name="audit" />Auditoria</a
         >
       }
     </nav>
@@ -96,7 +96,7 @@
         <strong>{{ auth.session()?.fullName }}</strong
         ><small>{{ roleLabel() }}</small>
       </div>
-      <button title="Sair" (click)="auth.logout()">↪</button>
+      <button title="Sair" aria-label="Sair" (click)="auth.logout()"><app-icon name="logout" /></button>
     </div>
   </aside>
   <section class="workspace">
@@ -109,7 +109,7 @@
         aria-label="Abrir menu"
         (click)="menuOpen.set(!menuOpen())"
       >
-        ☰
+        <app-icon name="menu" />
       </button>
       <span class="topbar-title">Central de atendimento</span>
       <div

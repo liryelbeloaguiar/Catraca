@@ -16,7 +16,7 @@
 .fields label {
   display: grid;
   gap: 8px;
-  color: #31484d;
+  color: var(--color-text-soft);
   font-size: 13px;
   font-weight: 600;
 }

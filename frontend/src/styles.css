@@ -1,17 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+@import url("./styles/tokens.css");
 
 :root {
-  --ink: #182e35;
-  --muted: #64777c;
-  --line: #e4ebea;
-  --paper: #f5f8f7;
-  --white: #fff;
-  --green: #087c6c;
-  --green-dark: #075c53;
-  --mint: #dff3ed;
-  --orange: #e98546;
-  --navy: #173c44;
-  --shadow: 0 12px 40px rgba(19, 52, 57, 0.08);
   font-family: "DM Sans", sans-serif;
   color: var(--ink);
   background: var(--paper);
@@ -175,7 +165,7 @@ p {
 .form-grid label {
   display: grid;
   gap: 8px;
-  color: #31484d;
+  color: var(--color-text-soft);
   font-weight: 600;
   font-size: 13px;
 }
@@ -183,11 +173,11 @@ p {
 .form-grid input,
 .search {
   width: 100%;
-  border: 1px solid #d7e1df;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 13px 14px;
   outline: none;
-  background: #fbfcfc;
+  background: var(--color-surface-muted);
   color: var(--ink);
   transition: 0.2s;
 }
@@ -249,7 +239,7 @@ p {
   padding: 12px 14px;
   border-radius: 9px;
   color: #09695d;
-  background: #e4f5f1;
+  background: var(--color-success-bg);
   font-size: 14px;
 }
 .alert.error {
@@ -524,7 +514,7 @@ p {
   font-size: 19px;
 }
 .quick-icon.green {
-  color: #087c6c;
+  color: var(--color-primary-600);
   background: #e4f4f0;
 }
 .quick-icon.orange {
