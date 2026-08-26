@@ -1,61 +1,54 @@
 # Catraca
 
-Monólito modular para agendamento, filas e gestão operacional de atendimentos.
+O Catraca é um sistema que desenvolvi para organizar agendamentos, filas e chamadas de atendimento. Tentei reproduzir problemas de uma operação real: horários com capacidade limitada, encaixes, diferentes níveis de acesso, chamadas públicas e alterações simultâneas na fila.
 
-## Stack
+Neste projeto eu pratiquei a integração entre Angular e Spring Boot, autenticação com renovação de sessão, modelagem de regras de negócio, migrations, controle de concorrência e atualização em tempo real com Server-Sent Events (SSE).
 
-- Angular 20 com componentes standalone, lazy loading, guards, interceptor e formulários reativos
-- Spring Boot 3.5 com Java 21, Spring Security, REST e Flyway
-- PostgreSQL 17 local, administrado pelo pgAdmin local
-- Docker Compose para backend e frontend
+## O que implementei
+
+- agendamentos com horários, capacidade e encaixes;
+- filas configuráveis, prioridades e chamadas por guichê;
+- painel público atualizado em tempo real, sem expor a sessão do operador;
+- perfis de acesso para administração, recepção, profissionais e pacientes;
+- cadastros de unidades, serviços, salas, guichês, profissionais e escalas;
+- notificações no sistema e envio opcional por e-mail;
+- auditoria técnica restrita ao perfil de desenvolvimento;
+- renovação silenciosa da sessão quando o token de acesso expira.
+
+
+## Demonstração visual
+
+
+## Tecnologias
+
+- Angular 20 com componentes standalone, lazy loading, guards, interceptor e formulários reativos;
+- Spring Boot 3.5 e Java 21;
+- Spring Security, API REST e SSE;
+- PostgreSQL 17 e Flyway;
+- Docker Compose para frontend e backend.
 
 ## Executar localmente
+
+Pré-requisitos: Java 21, Node.js, npm e PostgreSQL 17. Docker é opcional para executar frontend e backend em contêineres.
+
+Crie o banco, copie e preencha as variáveis de ambiente e suba os serviços:
 
 ```bash
 cp .env.example .env
 docker compose up --build -d
 ```
 
-- Sistema: http://localhost:4200
-- API: http://localhost:8080
-- Banco: PostgreSQL instalado
+- aplicação: <http://localhost:4200>;
+- API: <http://localhost:8080>;
+- health check: <http://localhost:8080/actuator/health>.
 
-## Usuários locais
 
-Com o perfil `local`, as migrations de dados de teste criam um usuário por role. Todos usam a senha `123456`. A lista completa está em [backend/TEST-USERS.md](backend/TEST-USERS.md).
+## Usuários de demonstração
 
-O mesmo formulário de login é usado por todos os perfis. O frontend libera os recursos de acordo com as roles e permissions devolvidas pela API.
+Com o perfil Spring `local`, as migrations de teste criam usuários fictícios. A relação está em [backend/TEST-USERS.md](backend/TEST-USERS.md).
 
-### Administração de acessos
+As contas usam a senha simples `123456` somente para demonstração local. Ela não deve ser reutilizada em contas reais.
 
-- `DEV_ADMIN` possui visão técnica completa, incluindo a lista geral de usuários e a auditoria com IP, rota e navegador. A auditoria é exclusiva desse perfil e também é protegida diretamente na API.
-- `ADMIN_USER` cadastra funcionários, atribui perfis funcionais e gera crachás virtuais imprimíveis.
-- Todos os usuários possuem a área **Meu perfil** para atualizar nome, telefone, foto e senha.
+## E-mail
 
-### Cadastros do `ADMIN_USER`
-
-Após entrar como `admin-user@teste`, os cadastros ficam no menu lateral:
-
-- **Pessoas > Funcionários**: cria o acesso funcional, gera automaticamente a matrícula, vincula unidade e perfil e gera o crachá virtual imprimível. Profissionais e médicos recebem também tipo profissional, registro, especialidade e duração padrão.
-- **Administração > Unidades, Serviços, Especialidades, Prioridades, Salas, Guichês, Configurar filas, Tipos profissionais e Setores**: mantém os cadastros operacionais sem dados simulados.
-- **Administração > Escalas e horários**: define profissional, unidade, sala, vigência, dias da semana, início, fim, intervalo, duração e capacidade. Ao salvar, os horários permitidos são gerados no banco.
-- **Estabelecimento**: define o nome institucional, o e-mail usado nas notificações e o rodapé dos crachás. Na impressão, somente o crachá é enviado no tamanho CR80.
-
-### Agendamentos pelo atendimento
-
-Recepcionistas e atendentes de guichê podem criar agendamentos em **Agendamentos > Novo agendamento**. Não é necessário criar uma conta para o paciente: basta informar nome, unidade, serviço, data, horário e, quando exigido pelo serviço, o guichê de destino. Datas do mesmo dia são aceitas. Quando o horário estiver lotado, um usuário autorizado pode confirmar o agendamento como encaixe.
-
-### Painel de chamadas e notificações
-
-O painel público de chamadas recebe atualizações em tempo real por SSE, sem recarregar a página e sem expor a sessão do operador. Alterações de escala e desativações de profissionais geram avisos no sistema para os pacientes afetados. O envio por e-mail fica ativo quando as variáveis SMTP são configuradas.
-
-## Banco e dados
-
-Todas as alterações de schema estão em `backend/src/main/resources/db/migration`. O Hibernate usa `ddl-auto: validate`. As contas de teste ficam isoladas em `db/testdata` e só são carregadas pelo perfil local. Não são criados pacientes, profissionais, serviços, unidades, agendas, agendamentos ou fichas fictícias.
-
-As migrations já aplicadas não devem ser editadas. Mudanças de dados ou estrutura devem ser criadas em uma nova versão para preservar os checksums do Flyway.
-
-## E-mail SMTP
-
-Para enviar os avisos por e-mail, configure `MAIL_ENABLED=true`, `MAIL_USERNAME` e `MAIL_PASSWORD`. No Gmail, `MAIL_PASSWORD` deve ser uma senha de app; a senha normal da conta não deve ser armazenada no repositório.
-"# Catraca" 
+O envio é opcional. Para ativá-lo, configure `SMTP_ENABLED=true`, `SMTP_USERNAME` e `SMTP_PASSWORD`.
