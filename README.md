@@ -1,6 +1,6 @@
 # Catraca
 
-O Catraca é um sistema que desenvolvi para organizar agendamentos, filas e chamadas de atendimento. Tentei reproduzir problemas de uma operação real: horários com capacidade limitada, encaixes, diferentes níveis de acesso, chamadas públicas e alterações simultâneas na fila.
+O Catraca é um sistema que desenvolvi para organizar agendamentos, filas e chamadas de atendimento. A ideia foi reproduzir situações de uma operação real: horários com capacidade limitada, encaixes, diferentes níveis de acesso, chamadas públicas e alterações simultâneas na fila.
 
 Neste projeto eu pratiquei a integração entre Angular e Spring Boot, autenticação com renovação de sessão, modelagem de regras de negócio, migrations, controle de concorrência e atualização em tempo real com Server-Sent Events (SSE).
 
@@ -9,6 +9,7 @@ Neste projeto eu pratiquei a integração entre Angular e Spring Boot, autentica
 - agendamentos com horários, capacidade e encaixes;
 - filas configuráveis, prioridades e chamadas por guichê;
 - painel público atualizado em tempo real, sem expor a sessão do operador;
+- chamada sonora e por voz no painel público, usando os recursos do navegador;
 - perfis de acesso para administração, recepção, profissionais e pacientes;
 - cadastros de unidades, serviços, salas, guichês, profissionais e escalas;
 - notificações no sistema e envio opcional por e-mail;
@@ -17,6 +18,30 @@ Neste projeto eu pratiquei a integração entre Angular e Spring Boot, autentica
 
 
 ## Demonstração visual
+As telas abaixo só correspondem a uma pequena parte do projeto.
+
+<p align="center">
+  <img src="frontend/public/prints-sistema/Captura%20de%20tela%202026-08-26%20020616.png" alt="Tela de login do Catraca" width="47%">
+  <img src="frontend/public/prints-sistema/Captura%20de%20tela%202026-08-26%20020723.png" alt="Painel administrativo do Catraca" width="47%">
+</p>
+
+<p align="center">
+  <img src="frontend/public/prints-sistema/Captura%20de%20tela%202026-08-26%20013946.png" alt="Painel público com chamada em tempo real" width="72%">
+</p>
+
+## Revisão de código
+
+O sistema já cobre o fluxo principal, mas ainda não considero o projeto encerrado. Minha revisão atual está concentrada nestes pontos:
+
+- revisar o código e reduzir trechos repetidos, aproveitando melhor os componentes, textos, erros e estilos compartilhados;
+- adicionar um botão de voltar nas telas em que a navegação pelo menu não é suficiente;
+- revisar o envio, recorte e exibição da imagem usada no perfil e no crachá;
+- melhorar o visual e a organização das informações do crachá, inclusive na impressão;
+- testar e ajustar a responsividade em celulares, tablets e telas intermediárias;
+- rever a regra de prioridade das filas e documentar melhor como peso, horário agendado e tempo de espera influenciam a chamada;
+- concluir e revisar a edição das escalas, principalmente a regeneração de horários e o impacto em agendamentos existentes;
+- revisar contraste, espaçamento, estados vazios, mensagens de erro e consistência dos componentes;
+- ampliar os testes dos fluxos de agendamento, fila, edição de escalas e renovação de sessão.
 
 
 ## Tecnologias

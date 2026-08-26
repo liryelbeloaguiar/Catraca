@@ -162,3 +162,4 @@ SET establishment_name = 'Clínica Catraca — Demonstração',
 WHERE id = 1;
 
 COMMIT;
+

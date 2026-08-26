@@ -5,6 +5,8 @@
 # Images & Graphics
 # ---------------------------------------------------------------------------
 *.png                filter=lfs diff=lfs merge=lfs -text
+# Portfolio screenshots are small enough for regular Git and must render in README without LFS quota.
+frontend/public/prints-sistema/*.png -filter -diff -merge -text
 *.jpg                filter=lfs diff=lfs merge=lfs -text
 *.jpeg               filter=lfs diff=lfs merge=lfs -text
 *.gif                filter=lfs diff=lfs merge=lfs -text
